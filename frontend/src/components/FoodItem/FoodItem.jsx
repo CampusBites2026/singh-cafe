@@ -28,7 +28,7 @@ const FoodItem = ({
   const getImageUrl = () => {
     if (!image) return fallbackImage;
     if (image.startsWith("http")) return image;
-    return `https://singhcafe.onrender.com/images/${image}`;
+    return `https://singh-cafe-4pum.onrender.com/images/${image}`;
   };
 
  const stock =
