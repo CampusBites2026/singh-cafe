@@ -8,7 +8,7 @@ import { showNotification } from "../../utils/showNotification";
 // =============================================
 // Socket.IO — single instance for this page
 // =============================================
-const socket = io("http://localhost:5000", { autoConnect: true });
+const socket = io("https://singh-cafe-4pum.onrender.com", { autoConnect: true });
 
 const Orders = () => {
   /* ================= ONLINE ORDERS ================= */
@@ -33,7 +33,7 @@ const Orders = () => {
   // so sound stops only when ALL are handled
   const pendingCountRef = useRef(0);
 
-  const API_BASE = "http://localhost:5000";
+  const API_BASE = "https://singh-cafe-4pum.onrender.com";
 
   // ONLINE APIs
   const LIST_API = `${API_BASE}/api/order/list`;
