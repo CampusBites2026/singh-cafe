@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import axios from "axios";
 import "./MonthlyReport.css";
 
-const API_MONTHLY = "https://singhcafe.onrender.com/api/reports/monthly";
-const API_DAILY = "https://singhcafe.onrender.com/api/reports/daily";
+const API_MONTHLY = "https://singh-cafe-4pum.onrender.com/api/reports/monthly";
+const API_DAILY = "https://singh-cafe-4pum.onrender.com/api/reports/daily";
 
 const MonthlyReport = () => {
   const [mode, setMode] = useState("monthly");
