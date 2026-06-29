@@ -18,44 +18,21 @@ import {
 
 const router = express.Router();
 
-/* ================= ADMIN ================= */
+/* ================= ADMIN (no auth) ================= */
+router.get("/list", listOrders);
+router.post("/accept", acceptOrder);
+router.post("/reject", rejectOrder);
+router.get("/kitchen", kitchenOrders);
+router.post("/prepared", markPrepared);
+router.post("/delivered", markDelivered);
 
-router.get("/list", authMiddleware, listOrders);
-
-router.post("/accept", authMiddleware, acceptOrder);
-router.post("/reject", authMiddleware, rejectOrder);
-
-router.get("/kitchen", authMiddleware, kitchenOrders);
-
-router.post("/prepared", authMiddleware, markPrepared);
-router.post("/delivered", authMiddleware, markDelivered);
-
-/* ================= USER ================= */
-
+/* ================= USER (keep auth) ================= */
 router.post("/place", authMiddleware, placeOrder);
-
 router.post("/placecod", authMiddleware, placeOrderCod);
-
 router.get("/userorders", authMiddleware, userOrders);
-
 router.post("/verify", authMiddleware, verifyOrder);
-
-router.post(
-  "/cancel-reservation",
-  authMiddleware,
-  cancelReservation
-);
-
-router.get(
-  "/status/:orderId",
-  authMiddleware,
-  getOrderStatus
-);
-
-router.get(
-  "/bill/:orderId",
-  authMiddleware,
-  getBillByOrderId
-);
+router.post("/cancel-reservation", authMiddleware, cancelReservation);
+router.get("/status/:orderId", authMiddleware, getOrderStatus);
+router.get("/bill/:orderId", authMiddleware, getBillByOrderId);
 
 export default router;
