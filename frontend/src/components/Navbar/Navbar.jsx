@@ -27,7 +27,7 @@ const Navbar = ({ setShowLogin }) => {
     const fetchKitchenStatus = async () => {
       try {
         const res = await fetch(
-  "https://singhcafe.onrender.com/api/settings"
+  "https://singh-cafe-4pum.onrender.com/api/settings"
 );
         const data = await res.json();
         setKitchenOpen(data.kitchenOpen);
