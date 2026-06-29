@@ -7,14 +7,14 @@ const KitchenProvider = ({ children }) => {
   const [kitchenOpen, setKitchenOpen] = useState(true);
 
   const fetchStatus = async () => {
-    const res = await axios.get("https://singhcafe.onrender.com/api/settings");
+    const res = await axios.get("https://singh-cafe-4pum.onrender.com/api/settings");
     if (res.data.success) {
       setKitchenOpen(res.data.kitchenOpen);
     }
   };
 
   const toggleKitchen = async () => {
-    const res = await axios.post("https://singhcafe.onrender.com/api/settings/toggle-kitchen");
+    const res = await axios.post("https://singh-cafe-4pum.onrender.com/api/settings/toggle-kitchen");
     if (res.data.success) {
       setKitchenOpen(res.data.kitchenOpen);
     }
