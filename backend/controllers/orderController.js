@@ -34,8 +34,6 @@ const validateFacultyAccess = (address) => {
   return true;
 };
 
-
-
 /* ================= CREATE ORDER OBJECT ================= */
 const createOrderObject = async ({
   userId,
@@ -118,56 +116,46 @@ export const placeOrder = async (req, res) => {
         .json({ success: false, message: "Invalid faculty verification code" });
     }
 
- let stockReserved = false;
+    let stockReserved = false;
 
-try {
-  await reserveStock(items);
-  stockReserved = true;
+    try {
+      await reserveStock(items);
+      stockReserved = true;
 
-  const order = await createOrderObject({
-    userId,
-    items,
-    amount,
-    discount,
-    couponCode,
-    address: updatedAddress,
-    deliveryFee,
-    paymentMethod: "PENDING",
-  });
+      const order = await createOrderObject({
+        userId,
+        items,
+        amount,
+        discount,
+        couponCode,
+        address: updatedAddress,
+        deliveryFee,
+        paymentMethod: "PENDING",
+      });
 
-  order.reservationExpiresAt =
-    new Date(Date.now() + 5 * 60 * 1000);
+      order.reservationExpiresAt = new Date(Date.now() + 5 * 60 * 1000);
+      order.reservationStatus = "ACTIVE";
 
-  order.reservationStatus = "ACTIVE";
+      await order.save();
 
-  await order.save();
+      const io = req.app.get("io");
+      if (io) io.emit("new-order", order);
 
-  const io = req.app.get("io");
-  if (io) io.emit("new-order", order);
+      await userModel.findByIdAndUpdate(userId, {
+        $push: {
+          notifications: {
+            message: `✅ Order ${order.orderNumber} placed successfully`,
+          },
+        },
+      });
 
-  await userModel.findByIdAndUpdate(userId, {
-    $push: {
-      notifications: {
-        message: `✅ Order ${order.orderNumber} placed successfully`,
-      },
-    },
-  });
-
-  return res.json({
-    success: true,
-    order,
-  });
-
-} catch (err) {
-
-  if (stockReserved) {
-    await releaseReservedStock(items);
-  }
-
-  throw err;
-}
-
-
+      return res.json({ success: true, order });
+    } catch (err) {
+      if (stockReserved) {
+        await releaseReservedStock(items);
+      }
+      throw err;
+    }
   } catch (error) {
     console.error("PLACE ORDER ERROR:", error);
     res.status(400).json({
@@ -224,22 +212,15 @@ export const placeOrderCod = async (req, res) => {
 
     await updateStock(order.items);
     await order.save();
-    if (
-  order.userId &&
-  order.couponCode
-) {
-  await userModel.findByIdAndUpdate(
-    order.userId,
-    {
-      $addToSet: {
-        usedCoupons:
-          order.couponCode.toUpperCase(),
-      },
-    }
-  );
-}
 
-    // 🔔 EMIT NEW ORDER TO ADMIN
+    if (order.userId && order.couponCode) {
+      await userModel.findByIdAndUpdate(order.userId, {
+        $addToSet: {
+          usedCoupons: order.couponCode.toUpperCase(),
+        },
+      });
+    }
+
     const io = req.app.get("io");
     if (io) io.emit("new-order", order);
 
@@ -304,31 +285,28 @@ export const acceptOrder = async (req, res) => {
   try {
     console.log("🔥 ACCEPT CLICKED:", req.body.orderId);
 
-    const order = await orderModel.findById(
-  req.body.orderId
-);
+    const order = await orderModel.findById(req.body.orderId);
 
-if (!order) {
-  return res.status(404).json({
-    success: false,
-    message: "Order not found",
-  });
-}
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: "Order not found",
+      });
+    }
 
-if (order.status !== "CONFIRMED") {
-  return res.status(400).json({
-    success: false,
-    message: "Order already processed",
-  });
-}
+    const acceptableStatuses = ["CONFIRMED", "pending", "PENDING", "COD"];
+    if (!acceptableStatuses.includes(order.status)) {
+      return res.status(400).json({
+        success: false,
+        message: "Order already processed",
+      });
+    }
 
-order.status = "preparing";
+    order.status = "preparing";
+    await order.save();
 
-await order.save();
+    console.log("🔥 ORDER ACCEPTED:", order.orderNumber);
 
-    console.log("🔥 ORDER FOUND:", order);
-
-    // 🔔 EMIT ORDER UPDATED — stops sound on admin if no more pending
     const io = req.app.get("io");
     if (io) io.emit("order-updated", order);
 
@@ -360,41 +338,36 @@ await order.save();
 /* ================= REJECT ORDER ================= */
 export const rejectOrder = async (req, res) => {
   try {
-    const order = await orderModel.findById(
-  req.body.orderId
-);
+    const order = await orderModel.findById(req.body.orderId);
 
-if (!order) {
-  if (order.status === "rejected") {
-  return res.status(400).json({
-    success: false,
-    message: "Order already rejected",
-  });
-}
-  return res.status(404).json({
-    success: false,
-    message: "Order not found",
-  });
-}
-
-order.status = "rejected";
-
-if (order.paymentStatus === "PAID") {
-  for (const item of order.items) {
-    const food = await foodModel.findById(
-      item._id
-    );
-
-    if (!food) continue;
-
-    if (food.quantity !== null) {
-      food.quantity += item.quantity;
-      await food.save();
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: "Order not found",
+      });
     }
-  }
-}
 
-await order.save();
+    if (order.status === "rejected") {
+      return res.status(400).json({
+        success: false,
+        message: "Order already rejected",
+      });
+    }
+
+    order.status = "rejected";
+
+    if (order.paymentStatus === "PAID") {
+      for (const item of order.items) {
+        const food = await foodModel.findById(item._id);
+        if (!food) continue;
+        if (food.quantity !== null) {
+          food.quantity += item.quantity;
+          await food.save();
+        }
+      }
+    }
+
+    await order.save();
 
     const io = req.app.get("io");
     if (io) io.emit("order-updated", order);
@@ -412,7 +385,6 @@ await order.save();
     res.json({ success: true });
   } catch (error) {
     console.error("REJECT ORDER ERROR:", error);
-
     res.status(500).json({
       success: false,
       message: error.message,
@@ -420,130 +392,86 @@ await order.save();
   }
 };
 
+/* ================= KITCHEN ORDERS ================= */
 export const kitchenOrders = async (req, res) => {
   try {
-    const orders = await orderModel.find({
-      status: "preparing",
-    });
-
-    res.json({
-      success: true,
-      orders,
-    });
+    const orders = await orderModel.find({ status: "preparing" });
+    res.json({ success: true, orders });
   } catch (error) {
-    console.error(
-      "KITCHEN ORDERS ERROR:",
-      error
-    );
-
-    res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    console.error("KITCHEN ORDERS ERROR:", error);
+    res.status(500).json({ success: false, message: error.message });
   }
 };
 
+/* ================= MARK PREPARED ================= */
 export const markPrepared = async (req, res) => {
   try {
-    const order = await orderModel.findById(
-  req.body.orderId
-);
+    const order = await orderModel.findById(req.body.orderId);
 
-if (!order) {
-  return res.status(404).json({
-    success: false,
-    message: "Order not found",
-  });
-}
+    if (!order) {
+      return res.status(404).json({ success: false, message: "Order not found" });
+    }
 
-if (order.status !== "preparing") {
-  return res.status(400).json({
-    success: false,
-    message:
-      "Order must be preparing first",
-  });
-}
+    if (order.status !== "preparing") {
+      return res.status(400).json({
+        success: false,
+        message: "Order must be preparing first",
+      });
+    }
 
-order.status = "prepared";
-
-await order.save();
+    order.status = "prepared";
+    await order.save();
 
     if (order?.userId) {
-      await userModel.findByIdAndUpdate(
-        order.userId,
-        {
-          $push: {
-            notifications: {
-              message: `🍔 Order ${order.orderNumber} is ready for pickup`,
-            },
+      await userModel.findByIdAndUpdate(order.userId, {
+        $push: {
+          notifications: {
+            message: `🍔 Order ${order.orderNumber} is ready for pickup`,
           },
-        }
-      );
+        },
+      });
     }
 
     res.json({ success: true });
   } catch (error) {
-    console.error(
-      "MARK PREPARED ERROR:",
-      error
-    );
-
-    res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    console.error("MARK PREPARED ERROR:", error);
+    res.status(500).json({ success: false, message: error.message });
   }
 };
 
+/* ================= MARK DELIVERED ================= */
 export const markDelivered = async (req, res) => {
   try {
-   const order = await orderModel.findById(
-  req.body.orderId
-);
+    const order = await orderModel.findById(req.body.orderId);
 
-if (!order) {
-  return res.status(404).json({
-    success: false,
-    message: "Order not found",
-  });
-}
+    if (!order) {
+      return res.status(404).json({ success: false, message: "Order not found" });
+    }
 
-if (order.status !== "prepared") {
-  return res.status(400).json({
-    success: false,
-    message:
-      "Order must be prepared first",
-  });
-}
+    if (order.status !== "prepared") {
+      return res.status(400).json({
+        success: false,
+        message: "Order must be prepared first",
+      });
+    }
 
-order.status = "delivered";
-
-await order.save();
+    order.status = "delivered";
+    await order.save();
 
     if (order?.userId) {
-      await userModel.findByIdAndUpdate(
-        order.userId,
-        {
-          $push: {
-            notifications: {
-              message: `🎉 Order ${order.orderNumber} delivered successfully`,
-            },
+      await userModel.findByIdAndUpdate(order.userId, {
+        $push: {
+          notifications: {
+            message: `🎉 Order ${order.orderNumber} delivered successfully`,
           },
-        }
-      );
+        },
+      });
     }
 
     res.json({ success: true });
   } catch (error) {
-    console.error(
-      "MARK DELIVERED ERROR:",
-      error
-    );
-
-    res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+    console.error("MARK DELIVERED ERROR:", error);
+    res.status(500).json({ success: false, message: error.message });
   }
 };
 
@@ -564,14 +492,14 @@ export const getOrderStatus = async (req, res) => {
       order.status
     );
 
-return res.json({
-  success: true,
-  order: {
-    _id: order._id,
-    status: order.status,
-    paymentStatus: order.paymentStatus,
-  },
-});
+    return res.json({
+      success: true,
+      order: {
+        _id: order._id,
+        status: order.status,
+        paymentStatus: order.paymentStatus,
+      },
+    });
   } catch (error) {
     console.error("STATUS ERROR:", error);
     res.status(500).json({ error: error.message });
@@ -597,43 +525,33 @@ export const verifyOrder = async (req, res) => {
 
     if (expectedSignature === razorpay_signature) {
       const order = await orderModel.findById(orderId);
-      if (order.paymentStatus === "PAID") {
-  return res.json({
-    success: true,
-    message: "Order already verified",
-  });
-}
 
       if (!order) {
         return res.json({ success: false, message: "Order not found" });
       }
 
+      if (order.paymentStatus === "PAID") {
+        return res.json({ success: true, message: "Order already verified" });
+      }
+
       await updateStock(order.items);
 
-order.paymentStatus = "PAID";
-order.status = "CONFIRMED";
-order.payment = true;
-
-order.reservationStatus = "COMPLETED";
+      order.paymentStatus = "PAID";
+      order.status = "CONFIRMED";
+      order.payment = true;
+      order.reservationStatus = "COMPLETED";
 
       await order.save();
       await clearUserCart(order.userId);
-      if (
-  order.userId &&
-  order.couponCode
-) {
-  await userModel.findByIdAndUpdate(
-    order.userId,
-    {
-      $addToSet: {
-        usedCoupons:
-          order.couponCode.toUpperCase(),
-      },
-    }
-  );
-}
 
-      // 🔔 EMIT NEW ORDER AFTER PAYMENT CONFIRMED
+      if (order.userId && order.couponCode) {
+        await userModel.findByIdAndUpdate(order.userId, {
+          $addToSet: {
+            usedCoupons: order.couponCode.toUpperCase(),
+          },
+        });
+      }
+
       const io = req.app.get("io");
       if (io) io.emit("new-order", order);
 
@@ -649,20 +567,17 @@ order.reservationStatus = "COMPLETED";
 
       return res.json({ success: true });
     } else {
-     const failedOrder =
-  await orderModel.findById(orderId);
+      const failedOrder = await orderModel.findById(orderId);
 
-if (failedOrder) {
-  await releaseReservedStock(
-    failedOrder.items
-  );
+      if (failedOrder) {
+        await releaseReservedStock(failedOrder.items);
 
-  failedOrder.paymentStatus = "FAILED";
-  failedOrder.status = "CANCELLED";
-  failedOrder.reservationStatus = "RELEASED";
+        failedOrder.paymentStatus = "FAILED";
+        failedOrder.status = "CANCELLED";
+        failedOrder.reservationStatus = "RELEASED";
 
-  await failedOrder.save();
-}
+        await failedOrder.save();
+      }
 
       return res.json({ success: false });
     }
@@ -706,6 +621,8 @@ export const getBillByOrderId = async (req, res) => {
     res.status(500).json({ success: false, message: "Server error" });
   }
 };
+
+/* ================= CANCEL RESERVATION ================= */
 export const cancelReservation = async (req, res) => {
   try {
     const { orderId } = req.body;
@@ -713,19 +630,14 @@ export const cancelReservation = async (req, res) => {
     const order = await orderModel.findById(orderId);
 
     if (!order) {
-      return res.json({
-        success: false,
-        message: "Order not found",
-      });
+      return res.json({ success: false, message: "Order not found" });
     }
 
     if (
       order.reservationStatus !== "ACTIVE" ||
       order.paymentStatus !== "PENDING"
     ) {
-      return res.json({
-        success: true,
-      });
+      return res.json({ success: true });
     }
 
     await releaseReservedStock(order.items);
@@ -736,21 +648,14 @@ export const cancelReservation = async (req, res) => {
 
     await order.save();
 
-    return res.json({
-      success: true,
-    });
-
+    return res.json({ success: true });
   } catch (error) {
-    console.error(
-      "CANCEL RESERVATION ERROR:",
-      error
-    );
-
-    return res.status(500).json({
-      success: false,
-    });
+    console.error("CANCEL RESERVATION ERROR:", error);
+    return res.status(500).json({ success: false });
   }
 };
+
+/* ================= RELEASE EXPIRED RESERVATIONS ================= */
 export const releaseExpiredReservations = async () => {
   try {
     const expiredOrders = await orderModel.find({
@@ -768,14 +673,9 @@ export const releaseExpiredReservations = async () => {
 
       await order.save();
 
-      console.log(
-        `⏰ Reservation expired for Order ${order.orderNumber}`
-      );
+      console.log(`⏰ Reservation expired for Order ${order.orderNumber}`);
     }
   } catch (error) {
-    console.error(
-      "Reservation Cleanup Error:",
-      error
-    );
+    console.error("Reservation Cleanup Error:", error);
   }
 };
