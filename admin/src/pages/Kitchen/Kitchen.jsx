@@ -8,10 +8,10 @@ const Kitchen = () => {
   const loadOrders = async () => {
     try {
       const onlineRes = await axios.get(
-        "https://singhcafe.onrender.com/api/order/kitchen"
+        "https://singh-cafe-4pum.onrender.com/api/order/kitchen"
       );
       const posRes = await axios.get(
-        "https://singhcafe.onrender.com/api/pos/orders"
+        "https://singh-cafe-4pum.onrender.com/api/pos/orders"
       );
 
       const online = onlineRes.data.orders || [];
@@ -36,12 +36,12 @@ const Kitchen = () => {
   const markPrepared = async (order) => {
     try {
       if (order.isPOS) {
-        await axios.post("https://singhcafe.onrender.com/api/pos/update-status", {
+        await axios.post("https://singh-cafe-4pum.onrender.com/api/pos/update-status", {
           orderId: order._id,
           status: "prepared",
         });
       } else {
-        await axios.post("https://singhcafe.onrender.com/api/order/prepared", {
+        await axios.post("https://singh-cafe-4pum.onrender.com/api/order/prepared", {
           orderId: order._id,
           status: "prepared",
         });
