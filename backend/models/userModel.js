@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-
 const userSchema = new mongoose.Schema(
   {
     name: {
@@ -7,7 +6,6 @@ const userSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
-
     email: {
       type: String,
       required: true,
@@ -15,34 +13,27 @@ const userSchema = new mongoose.Schema(
       lowercase: true,
       trim: true,
     },
-
     password: {
       type: String,
       required: true,
     },
-
-    // Optional Phone Number
     phone: {
       type: String,
       default: null,
       trim: true,
     },
-
     googleId: {
       type: String,
       default: null,
     },
-
     image: {
       type: String,
       default: "",
     },
-
     cartData: {
       type: Object,
       default: {},
     },
-
     usedCoupons: {
       type: [String],
       default: [],
@@ -51,26 +42,17 @@ const userSchema = new mongoose.Schema(
           String(coupon).toUpperCase()
         ),
     },
-
-    // ==========================
-    // USER NOTIFICATIONS
-    // ==========================
-
     notifications: {
       type: [
         {
-          _id: false,
-
           message: {
             type: String,
             required: true,
           },
-
           read: {
             type: Boolean,
             default: false,
           },
-
           createdAt: {
             type: Date,
             default: Date.now,
@@ -85,11 +67,8 @@ const userSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
-
 userSchema.index({ email: 1 });
-
 const userModel =
   mongoose.models.user ||
   mongoose.model("user", userSchema);
-
 export default userModel;
