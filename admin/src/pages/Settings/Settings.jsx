@@ -4,8 +4,8 @@ import "./Settings.css";
 
 const Settings = () => {
 
-  const SETTINGS_API = "https://singhcafe.onrender.com/api/settings";
-  const COUPON_API = "https://singhcafe.onrender.com/api/coupon";
+  const SETTINGS_API = "https://singh-cafe-4pum.onrender.com/api/settings";
+  const COUPON_API = "https://singh-cafe-4pum.onrender.com/api/coupon";
 
   const [deliveryFee, setDeliveryFee] = useState("");
   const [loading, setLoading] = useState(true);
