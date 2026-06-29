@@ -1,6 +1,5 @@
 import express from "express";
 import authMiddleware from "../middleware/auth.js";
-
 import {
   createCoupon,
   listCoupons,
@@ -10,32 +9,12 @@ import {
 
 const couponRouter = express.Router();
 
-/* CREATE COUPON */
-couponRouter.post(
-  "/create",
-  authMiddleware,
-  createCoupon
-);
+/* ================= ADMIN (no auth) ================= */
+couponRouter.post("/create", createCoupon);
+couponRouter.get("/list", listCoupons);
+couponRouter.post("/delete", deleteCoupon);
 
-/* GET ALL COUPONS */
-couponRouter.get(
-  "/list",
-  authMiddleware,
-  listCoupons
-);
-
-/* DELETE COUPON */
-couponRouter.post(
-  "/delete",
-  authMiddleware,
-  deleteCoupon
-);
-
-/* APPLY COUPON */
-couponRouter.post(
-  "/apply",
-  authMiddleware,
-  applyCoupon
-);
+/* ================= USER (keep auth) ================= */
+couponRouter.post("/apply", authMiddleware, applyCoupon);
 
 export default couponRouter;
