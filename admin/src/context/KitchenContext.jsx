@@ -9,7 +9,7 @@ const KitchenProvider = ({ children }) => {
   // ✅ Fetch status
   const fetchStatus = async () => {
     try {
-      const res = await axios.get("https://singhcafe.onrender.com/api/settings");
+      const res = await axios.get("https://singh-cafe-4pum.onrender.com/api/settings");
 
       if (res.data.success) {
         setKitchenOpen(res.data.kitchenOpen);
@@ -25,7 +25,7 @@ const KitchenProvider = ({ children }) => {
       const newStatus = !kitchenOpen;
 
       const res = await axios.post(
-        "https://singhcafe.onrender.com/api/settings/set-kitchen",
+        "https://singh-cafe-4pum.onrender.com/api/settings/set-kitchen",
         { kitchenOpen: newStatus }
       );
 
