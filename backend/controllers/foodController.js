@@ -81,7 +81,7 @@ availableQuantity:
       (item.reservedQuantity || 0),
 
   image: item.image
-    ? `https://singhcafe.onrender.com/images/${item.image}`
+    ? `https://singh-cafe-4pum.onrender.com/images/${item.image}`
     : null,
 }));
 
