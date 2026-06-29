@@ -294,24 +294,24 @@ export const acceptOrder = async (req, res) => {
       });
     }
 
-    const acceptableStatuses = ["CONFIRMED", "pending", "PENDING", "COD"];
+    console.log("🔥 ORDER STATUS:", order.status);
+
+    const acceptableStatuses = ["CONFIRMED", "pending", "PENDING", "COD", "PAID"];
     if (!acceptableStatuses.includes(order.status)) {
       return res.status(400).json({
         success: false,
-        message: "Order already processed",
+        message: `Order cannot be accepted. Current status: ${order.status}`,
       });
     }
 
     order.status = "preparing";
     await order.save();
 
-    console.log("🔥 ORDER ACCEPTED:", order.orderNumber);
-
     const io = req.app.get("io");
     if (io) io.emit("order-updated", order);
 
     if (order?.userId) {
-      const user = await userModel.findByIdAndUpdate(
+      await userModel.findByIdAndUpdate(
         order.userId,
         {
           $push: {
@@ -322,10 +322,6 @@ export const acceptOrder = async (req, res) => {
         },
         { new: true }
       );
-      console.log("🔥 USER FOUND:", user?._id);
-      console.log("🔥 TOTAL NOTIFICATIONS:", user?.notifications?.length);
-    } else {
-      console.log("❌ NO USER ID FOUND IN ORDER");
     }
 
     res.json({ success: true });
