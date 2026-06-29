@@ -109,8 +109,8 @@
 .notification-dropdown {
   position: fixed;
   top: 95px;
-  left: 18px;
-  right: 8px;
+  left: 0px;
+  right: 12px;
   width: auto;
   background: white;
   color: #333;
