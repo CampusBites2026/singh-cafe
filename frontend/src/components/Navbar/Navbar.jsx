@@ -40,7 +40,7 @@ const Navbar = ({ setShowLogin }) => {
 
   // Socket Connection
   useEffect(() => {
-    const socket = io("https://singhcafe.onrender.com");
+    const socket = io("https://singh-cafe-4pum.onrender.com");
 
     socket.on("kitchenStatusUpdated", (status) => {
       setKitchenOpen(status);
@@ -86,7 +86,7 @@ const Navbar = ({ setShowLogin }) => {
 
   const handleAdminAccess = () => {
     if (adminKey === "SRSINGHCAFE26") {
-      window.location.href = "https://campusbitessinghcafeadmin.vercel.app/";
+      window.location.href = "https://singhcafeadmin.vercel.app/";
     } else {
       showNotification(
   "Access Denied",
