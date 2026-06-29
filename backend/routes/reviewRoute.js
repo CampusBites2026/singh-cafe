@@ -1,6 +1,5 @@
 import express from "express";
 import authMiddleware from "../middleware/auth.js";
-
 import {
   addReview,
   getFoodReviews,
@@ -10,43 +9,12 @@ import {
 
 const reviewRouter = express.Router();
 
-/* ==========================
-   ADD REVIEW
-========================== */
+/* ================= ADMIN (no auth) ================= */
+reviewRouter.get("/admin/all", getAllReviews);
+reviewRouter.delete("/:reviewId", deleteReview);
 
-reviewRouter.post(
-  "/add",
-  authMiddleware,
-  addReview
-);
-
-/* ==========================
-   ADMIN ALL REVIEWS
-========================== */
-
-reviewRouter.get(
-  "/admin/all",
-  authMiddleware,
-  getAllReviews
-);
-
-/* ==========================
-   DELETE REVIEW
-========================== */
-
-reviewRouter.delete(
-  "/:reviewId",
-  authMiddleware,
-  deleteReview
-);
-
-/* ==========================
-   GET REVIEWS FOR FOOD
-========================== */
-
-reviewRouter.get(
-  "/food/:foodId",
-  getFoodReviews
-);
+/* ================= USER (keep auth) ================= */
+reviewRouter.post("/add", authMiddleware, addReview);
+reviewRouter.get("/food/:foodId", getFoodReviews);
 
 export default reviewRouter;
