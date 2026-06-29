@@ -12,7 +12,7 @@ const AdminLogin = () => {
     try {
       // SEND THE SAME BODY YOU SENT IN POSTMAN
       const res = await axios.post(
-        "https://singhcafe.onrender.com/api/admin/generate",
+        "https://singh-cafe-4pum.onrender.com/api/admin/generate",
         { ownerName: "Test Owner" }
       );
 
