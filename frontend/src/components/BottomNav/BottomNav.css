@@ -1,0 +1,94 @@
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+
+  height: 78px;
+  padding-bottom: env(safe-area-inset-bottom);
+
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+
+  border-top: 1px solid #f3f3f3;
+
+  box-shadow:
+    0 -8px 30px rgba(0, 0, 0, 0.08);
+
+  z-index: 9999;
+}
+
+.bottom-nav a {
+  text-decoration: none;
+
+  color: #8b8b8b;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  gap: 4px;
+
+  min-width: 60px;
+
+  font-size: 11px;
+  font-weight: 500;
+
+  transition: all 0.3s ease;
+
+  padding: 8px 10px;
+
+  border-radius: 14px;
+}
+
+.bottom-nav a span {
+  font-size: 22px;
+  transition: all 0.3s ease;
+}
+
+.bottom-nav a p {
+  margin: 0;
+  font-size: 11px;
+}
+
+/* Active Tab */
+
+.bottom-nav a.active {
+  color: #ff7a00;
+  background: rgba(255, 122, 0, 0.12);
+}
+
+.bottom-nav a.active span {
+  transform: scale(1.15);
+}
+
+/* Hover */
+
+.bottom-nav a:hover {
+  color: #ff7a00;
+}
+
+/* Desktop Hide */
+
+@media (min-width: 1025px) {
+  .bottom-nav {
+    display: none;
+  }
+}
+
+/* Small Phones */
+
+@media (max-width: 380px) {
+  .bottom-nav a span {
+    font-size: 20px;
+  }
+
+  .bottom-nav a p {
+    font-size: 10px;
+  }
+}

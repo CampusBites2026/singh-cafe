@@ -1,0 +1,165 @@
+.login-popup {
+  position: fixed;
+  inset: 0;
+
+  z-index: 9999;
+
+  background: rgba(0, 0, 0, 0.55);
+
+  backdrop-filter: blur(8px);
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  padding: 20px;
+}
+
+.login-popup-container {
+  width: 100%;
+  max-width: 400px;
+
+  background: white;
+
+  border-radius: 30px;
+
+  padding: 28px 24px;
+
+  position: relative;
+
+  text-align: center;
+
+  box-shadow:
+    0 25px 60px rgba(0,0,0,0.18);
+
+  animation: popupSlide .35s ease;
+}
+
+.login-close {
+  position: absolute;
+
+  top: 16px;
+  right: 16px;
+
+  width: 36px;
+  height: 36px;
+
+  border: none;
+
+  background: #fff3ea;
+
+  border-radius: 50%;
+
+  cursor: pointer;
+
+  font-size: 16px;
+
+  color: #ff7a00;
+
+  transition: all .3s ease;
+}
+
+.login-close:hover {
+  background: #ffe4cc;
+  transform: rotate(90deg);
+}
+
+.login-header {
+  margin-top: 10px;
+}
+
+.login-icon {
+  width: 90px;
+  height: 90px;
+
+  margin: 0 auto 18px;
+
+  border-radius: 50%;
+
+  background: linear-gradient(
+    135deg,
+    #ff7a00,
+    #ff9f43
+  );
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 42px;
+
+  box-shadow:
+    0 15px 35px rgba(255,122,0,.25);
+}
+
+.login-header h2 {
+  color: #222;
+
+  font-size: 28px;
+
+  font-weight: 700;
+
+  margin-bottom: 8px;
+}
+
+.login-header p {
+  color: #8a8a8a;
+
+  font-size: 14px;
+
+  line-height: 1.6;
+
+  max-width: 260px;
+
+  margin: 0 auto 25px;
+}
+
+.google-login-btn {
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.login-note {
+  display: block;
+
+  margin-top: 18px;
+
+  color: #999;
+
+  font-size: 12px;
+
+  line-height: 1.6;
+}
+
+@keyframes popupSlide {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (max-width: 480px) {
+
+  .login-popup-container {
+    border-radius: 28px;
+
+    padding: 24px 20px;
+  }
+
+  .login-header h2 {
+    font-size: 24px;
+  }
+
+  .login-icon {
+    width: 80px;
+    height: 80px;
+
+    font-size: 36px;
+  }
+}

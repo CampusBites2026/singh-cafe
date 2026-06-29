@@ -1,0 +1,564 @@
+import React, { useEffect, useState, useRef } from "react";
+import axios from "axios";
+import { io } from "socket.io-client";
+import "./Orders.css";
+import { QRCodeCanvas } from "qrcode.react";
+import useOrderSound from "./useOrderSound";
+import { showNotification } from "../../utils/showNotification";
+// =============================================
+// Socket.IO — single instance for this page
+// =============================================
+const socket = io("http://localhost:5000", { autoConnect: true });
+
+const Orders = () => {
+  /* ================= ONLINE ORDERS ================= */
+  const [onlineOrders, setOnlineOrders] = useState([]);
+  const [searchOrderId, setSearchOrderId] = useState("");
+  const [rejectingOrders, setRejectingOrders] = useState([]);
+  const rejectTimers = useRef({});
+
+  /* ================= POS ORDERS ================= */
+  const [posOrders, setPosOrders] = useState([]);
+  const [qrOrder, setQrOrder] = useState(null);
+
+  /* ================= MODAL ================= */
+  const [showModal, setShowModal] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [modalType, setModalType] = useState("online");
+
+  /* ================= SOUND ================= */
+  const { startSound, stopSound } = useOrderSound();
+
+  // Track how many pending (unactioned) orders we have
+  // so sound stops only when ALL are handled
+  const pendingCountRef = useRef(0);
+
+  const API_BASE = "http://localhost:5000";
+
+  // ONLINE APIs
+  const LIST_API = `${API_BASE}/api/order/list`;
+  const ACCEPT_API = `${API_BASE}/api/order/accept`;
+  const REJECT_API = `${API_BASE}/api/order/reject`;
+  const DELIVERED_API = `${API_BASE}/api/order/delivered`;
+  const PREPARED_API = `${API_BASE}/api/order/prepared`;
+
+  // POS APIs
+  const POS_LIST_API = `${API_BASE}/api/pos/orders`;
+  const POS_STATUS_API = `${API_BASE}/api/pos/update-status`;
+
+  /* ================= LOAD ONLINE ORDERS ================= */
+  const loadOrders = async () => {
+    try {
+      const res = await axios.get(LIST_API);
+      const orders =
+        res.data.data?.filter(
+          (o) => o.status !== "rejected" && o.status !== "delivered"
+        ) || [];
+      setOnlineOrders(orders);
+
+      // Sync pending count — orders that still need Accept/Reject
+      const pending = orders.filter(
+        (o) => o.status === "pending" || o.status === "PENDING" || o.status === "CONFIRMED"
+      );
+      pendingCountRef.current = pending.length;
+
+      // If page refreshed with existing pending orders, start sound
+      if (pending.length > 0) {
+        startSound();
+      }
+    } catch (err) {
+      console.error("Failed to load orders", err);
+    }
+  };
+
+  /* ================= LOAD POS ORDERS ================= */
+  const loadPosOrders = async () => {
+    try {
+      const res = await axios.get(POS_LIST_API);
+      const orders =
+        res.data.orders?.filter(
+          (o) => o.status !== "rejected" && o.status !== "delivered"
+        ) || [];
+      setPosOrders(orders);
+    } catch (err) {
+      console.error("Failed to load POS orders", err);
+    }
+  };
+
+  /* ================= POLLING + SOCKET SETUP ================= */
+  useEffect(() => {
+    loadOrders();
+    loadPosOrders();
+
+    const interval = setInterval(() => {
+      loadOrders();
+      loadPosOrders();
+    }, 5000);
+
+    // 🔔 NEW ORDER ARRIVES → start sound, add to list
+    socket.on("new-order", (order) => {
+      console.log("🔔 New order received:", order.orderNumber);
+
+      setOnlineOrders((prev) => {
+        // Avoid duplicates if polling already added it
+        const exists = prev.find((o) => o._id === order._id);
+        if (exists) return prev;
+        return [order, ...prev];
+      });
+
+      pendingCountRef.current += 1;
+      startSound();
+    });
+
+    // 🔕 ORDER ACTIONED → decrement counter, stop sound if all done
+    socket.on("order-updated", (updatedOrder) => {
+      console.log("✅ Order updated:", updatedOrder.orderNumber, updatedOrder.status);
+
+      setOnlineOrders((prev) => {
+        if (
+          updatedOrder.status === "rejected" ||
+          updatedOrder.status === "delivered"
+        ) {
+          return prev.filter((o) => o._id !== updatedOrder._id);
+        }
+        return prev.map((o) =>
+          o._id === updatedOrder._id ? updatedOrder : o
+        );
+      });
+
+      // Decrement pending count and stop sound if none left
+      if (
+        updatedOrder.status === "preparing" ||
+        updatedOrder.status === "rejected"
+      ) {
+        pendingCountRef.current = Math.max(0, pendingCountRef.current - 1);
+        if (pendingCountRef.current === 0) {
+          stopSound();
+        }
+      }
+    });
+
+    return () => {
+      clearInterval(interval);
+      socket.off("new-order");
+      socket.off("order-updated");
+    };
+  }, []);
+
+  /* ================= ONLINE ACTIONS ================= */
+  const acceptOrder = async (id) => {
+    if (rejectTimers.current[id]) {
+      clearTimeout(rejectTimers.current[id]);
+      delete rejectTimers.current[id];
+      setRejectingOrders((prev) => prev.filter((x) => x !== id));
+    }
+
+    await axios.post(ACCEPT_API, { orderId: id });
+    showNotification(
+  "Order Accepted",
+  "Kitchen has started preparing the order"
+);
+    loadOrders();
+    closeModal();
+  };
+
+  const rejectOrder = (id) => {
+    if (rejectTimers.current[id]) return;
+
+    setRejectingOrders((prev) => [...prev, id]);
+
+    rejectTimers.current[id] = setTimeout(async () => {
+      await axios.post(REJECT_API, { orderId: id });
+      showNotification(
+  "Order Rejected",
+  "Customer has been notified"
+);
+
+      delete rejectTimers.current[id];
+      setRejectingOrders((prev) => prev.filter((x) => x !== id));
+      setOnlineOrders((prev) => prev.filter((o) => o._id !== id));
+    }, 15000);
+  };
+
+  const deliverOrder = async (id) => {
+    await axios.post(DELIVERED_API, { orderId: id });
+    showNotification(
+  "Order Delivered",
+  "Order completed successfully"
+);
+    setOnlineOrders((prev) => prev.filter((o) => o._id !== id));
+    closeModal();
+  };
+
+  const markPrepared = async (id) => {
+    await axios.post(PREPARED_API, { orderId: id });
+    showNotification(
+  "Order Ready",
+  "Food is prepared and ready"
+);
+    loadOrders();
+  };
+
+  /* ================= POS ACTIONS ================= */
+  const updatePosStatus = async (id, status) => {
+  await axios.post(
+    POS_STATUS_API,
+    {
+      orderId: id,
+      status,
+    }
+  );
+
+  if (status === "prepared") {
+    showNotification(
+      "POS Order Ready",
+      "Order marked as prepared"
+    );
+  }
+
+  if (status === "delivered") {
+    showNotification(
+      "POS Order Delivered",
+      "Order completed"
+    );
+  }
+
+  loadPosOrders();
+};
+ 
+  /* ================= MODAL ================= */
+  const openViewModal = (order, type = "online") => {
+    setSelectedOrder(order);
+    setModalType(type);
+    setShowModal(true);
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
+    setSelectedOrder(null);
+  };
+
+  /* ================= HELPERS ================= */
+  const renderItems = (order) => {
+    if (!order.items || order.items.length === 0) return "No items";
+
+    const grouped = {};
+    order.items.forEach((item) => {
+      if (grouped[item.name]) {
+        grouped[item.name] += item.quantity;
+      } else {
+        grouped[item.name] = item.quantity;
+      }
+    });
+
+    return (
+      <div className="items-list">
+        {Object.entries(grouped).map(([name, qty], index) => (
+          <div key={index}>
+            {name} × {qty}
+          </div>
+        ))}
+      </div>
+    );
+  };
+
+  const statusClass = (status) => {
+    const s = status?.toLowerCase();
+    if (s === "pending") return "status-pill status-pending";
+    if (s === "preparing") return "status-pill status-processing";
+    if (s === "prepared") return "status-pill status-prepared";
+    return "status-pill status-default";
+  };
+
+  const generateUPILink = (order) => {
+    const upiId = "9569763863@kotak811";
+    const amount = order.totalAmount || order.amount;
+    return `upi://pay?pa=${upiId}&pn=CampusBites&am=${amount}&cu=INR`;
+  };  
+const filteredOnlineOrders = onlineOrders.filter((order) =>
+  order.orderNumber
+    ?.toLowerCase()
+    .includes(searchOrderId.toLowerCase())
+);
+  /* ================= RENDER ================= */
+  return (
+    <div className="orders-page">
+      <div className="orders-header">
+  <h2 className="orders-title">Orders Dashboard</h2>
+
+  <input
+    type="text"
+    className="order-search"
+    placeholder="Search Order ID..."
+    value={searchOrderId}
+    onChange={(e) => setSearchOrderId(e.target.value)}
+  />
+</div>
+
+      {/* ================= ONLINE ORDERS ================= */}
+      <div className="orders-table-wrapper">
+        <table className="orders-table modern-table">
+          <thead>
+            <tr>
+              <th>Order ID</th>
+              <th>Items</th>
+              <th>Customer</th>
+              <th>Amount</th>
+              <th>Status</th>
+              <th className="col-action">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredOnlineOrders.map((order) => (
+              <tr key={order._id}>
+                <td className="bold">{order.orderNumber}</td>
+                <td>{renderItems(order)}</td>
+                <td className="bold">
+                  {order.address?.fullName || "No Name"}
+                </td>
+                <td className="bold price">
+                  ₹{(order.amount + (order.deliveryFee || 0)).toFixed(2)}
+                </td>
+                <td>
+                  <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+                    <span className={statusClass(order.status)}>
+                      {rejectingOrders.includes(order._id)
+                        ? "Rejecting (15s)"
+                        : order.status}
+                    </span>
+                    <span className="payment-pill">
+                      {order.paymentMethod === "COD" ? "💵 CASH" : "💳 PAID"}
+                    </span>
+                  </div>
+                </td>
+                <td>
+                  <div className="action-buttons">
+                    <button
+                      className="btn-small"
+                      onClick={() => openViewModal(order, "online")}
+                    >
+                      View
+                    </button>
+
+                    {order.status !== "prepared" ? (
+                      <>
+                        <button
+                          className="btn-small btn-accept"
+                          onClick={() => acceptOrder(order._id)}
+                        >
+                          Accept
+                        </button>
+                        <button
+                          className="btn-small btn-reject"
+                          onClick={() => rejectOrder(order._id)}
+                        >
+                          Reject
+                        </button>
+                        <button
+                          className="btn-small btn-prepared"
+                          onClick={() => markPrepared(order._id)}
+                        >
+                          Already Cooked
+                        </button>
+                      </>
+                    ) : (
+                      <button
+                        className="btn-small btn-delivered"
+                        onClick={() => deliverOrder(order._id)}
+                      >
+                        Delivered
+                      </button>
+                    )}
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* ================= POS ORDERS ================= */}
+      <h3 style={{ marginTop: 40 }}>POS Orders</h3>
+
+      <div className="orders-table-wrapper">
+        <table className="orders-table modern-table pos-table">
+          <thead>
+            <tr>
+              <th>Order ID</th>
+              <th>Items</th>
+              <th>Customer</th>
+              <th>Order Type</th>
+              <th>Status</th>
+              <th className="col-action">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {posOrders.map((order) => (
+              <tr key={order._id}>
+                <td className="bold">{order.orderNumber}</td>
+                <td>{renderItems(order)}</td>
+                <td>
+                  <div className="customer-cell">
+                    <span>{order.customerName || "Walk-in"}</span>
+                    <small>{order.customerPhone || "—"}</small>
+                  </div>
+                </td>
+                <td className="text-cap">{order.orderType}</td>
+                <td>
+                  <span className={statusClass(order.status)}>
+                    {order.status}
+                  </span>
+                </td>
+                <td>
+                  <div className="action-buttons pos-actions-fixed">
+                    <button
+                      className="btn-small"
+                      onClick={() => openViewModal(order, "pos")}
+                    >
+                      View
+                    </button>
+                    <button
+                      className="btn-small btn-pay"
+                      onClick={() => setQrOrder(order)}
+                    >
+                      QR Pay
+                    </button>
+                    {order.status !== "prepared" ? (
+                      <button
+                        className="btn-small btn-accept"
+                        onClick={() => updatePosStatus(order._id, "prepared")}
+                      >
+                        Mark Prepared
+                      </button>
+                    ) : (
+                      <button
+                        className="btn-small btn-delivered"
+                        onClick={() => updatePosStatus(order._id, "delivered")}
+                      >
+                        Delivered
+                      </button>
+                    )}
+                  </div>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* ================= ORDER DETAILS MODAL ================= */}
+      {showModal && selectedOrder && (
+        <div className="modal-overlay">
+          <div className="modal fancy-modal">
+            <div className="modal-header">
+              <h3>🧾 Order Details</h3>
+              <button className="modal-close" onClick={closeModal}>
+                ✕
+              </button>
+            </div>
+
+            <div className="modal-body">
+              {modalType === "online" ? (
+                <>
+                  <div className="modal-section">
+                    <h4>Customer Info</h4>
+                    <p><strong>Name:</strong> {selectedOrder.address?.fullName}</p>
+                    <p><strong>Phone:</strong> {selectedOrder.address?.phone}</p>
+                    <p><strong>User Type:</strong> {selectedOrder.address?.userType}</p>
+                  </div>
+                  <div className="modal-section">
+                    <h4>Delivery Details</h4>
+                    <p><strong>Break Time:</strong> {selectedOrder.address?.breakTime || "—"}</p>
+                  </div>
+                  <div className="modal-section">
+                    <h4>Items</h4>
+                    {renderItems(selectedOrder)}
+                  </div>
+                  <div className="modal-section">
+                    <h4>Total</h4>
+                    ₹{selectedOrder.amount}
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="modal-section">
+                    <h4>Customer Info (POS)</h4>
+                    <p><strong>Name:</strong> {selectedOrder.customerName || "Walk-in"}</p>
+                    <p><strong>Phone:</strong> {selectedOrder.customerPhone || "—"}</p>
+                  </div>
+                  <div className="modal-section">
+                    <h4>Order Details</h4>
+                    <p><strong>Order Type:</strong> {selectedOrder.orderType}</p>
+                    <p><strong>Payment:</strong> {selectedOrder.paymentMethod}</p>
+                    <p><strong>Status:</strong> {selectedOrder.status}</p>
+                  </div>
+                  <div className="modal-section instructions-box">
+                    <h4>⚠ Special Instructions</h4>
+                    <p>{selectedOrder.instructions || "None"}</p>
+                  </div>
+                  <div className="modal-section">
+                    <h4>Items</h4>
+                    {renderItems(selectedOrder)}
+                  </div>
+                  {selectedOrder.couponCode && (
+                    <div className="modal-section">
+                      <h4>Coupon Applied</h4>
+                      <p><strong>Code:</strong> {selectedOrder.couponCode}</p>
+                      <p><strong>Discount:</strong> ₹{selectedOrder.discount}</p>
+                    </div>
+                  )}
+                  <div className="modal-section">
+                    <h4>Order Pricing</h4>
+                    <p>
+                      <strong>Subtotal:</strong>{" "}
+                      ₹{(selectedOrder.amount + (selectedOrder.discount || 0)).toFixed(2)}
+                    </p>
+                    {selectedOrder.discount > 0 && (
+                      <>
+                        <p><strong>Coupon:</strong> {selectedOrder.couponCode}</p>
+                        <p><strong>Discount:</strong> -₹{selectedOrder.discount}</p>
+                      </>
+                    )}
+                    <p><strong>Total:</strong> ₹{selectedOrder.amount}</p>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ================= QR PAYMENT MODAL ================= */}
+      {qrOrder && (
+        <div className="modal-overlay">
+          <div className="modal fancy-modal">
+            <div className="modal-header">
+              <h3>Scan to Pay</h3>
+              <button className="modal-close" onClick={() => setQrOrder(null)}>
+                ✕
+              </button>
+            </div>
+            <div className="modal-body qr-modal-body">
+              <QRCodeCanvas value={generateUPILink(qrOrder)} size={220} />
+              <p style={{ marginTop: "15px", fontWeight: "600" }}>
+                Amount: ₹{qrOrder.totalAmount || qrOrder.amount}
+              </p>
+              <p style={{ fontSize: "13px", color: "#6b7280" }}>
+                Scan using any UPI app (GPay, PhonePe, Paytm)
+              </p>
+              <button
+                className="btn-small"
+                style={{ marginTop: "15px" }}
+                onClick={() => setQrOrder(null)}
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default Orders;

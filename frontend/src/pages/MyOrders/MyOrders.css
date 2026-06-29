@@ -1,0 +1,251 @@
+.my-orders {
+  padding: 20px 16px 100px;
+}
+
+.my-orders h2 {
+  font-size: 28px;
+  font-weight: 700;
+  color: #222;
+  margin-bottom: 24px;
+}
+
+.my-orders .container {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* ==========================
+   ORDER CARD
+========================== */
+
+.my-orders-order {
+  background: white;
+
+  border-radius: 24px;
+
+  padding: 18px;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 12px;
+
+  box-shadow:
+    0 10px 30px rgba(0,0,0,0.06);
+
+  border: none;
+}
+
+.my-orders-order img {
+  width: 50px;
+  height: 50px;
+}
+
+.order-id {
+  font-size: 15px;
+  font-weight: 700;
+  color: #222;
+}
+
+.my-orders-order p {
+  margin: 0;
+  color: #666;
+  line-height: 1.5;
+}
+
+.my-orders-order p b {
+  color: #222;
+}
+
+/* ==========================
+   STATUS
+========================== */
+
+.my-orders-order span {
+  color: #ff7a00;
+}
+
+.my-orders-order p:last-of-type {
+  font-weight: 600;
+}
+
+/* ==========================
+   VIEW BILL BUTTON
+========================== */
+
+.view-bill-btn {
+  margin-top: 8px;
+
+  width: 100%;
+
+  border: none;
+
+  border-radius: 16px;
+
+  padding: 14px;
+
+  background: linear-gradient(
+    135deg,
+    #ff7a00,
+    #ff9f43
+  );
+
+  color: white;
+
+  font-weight: 700;
+
+  font-size: 14px;
+
+  cursor: pointer;
+
+  transition: all .3s ease;
+
+  box-shadow:
+    0 10px 25px rgba(255,122,0,.25);
+}
+
+.view-bill-btn:hover {
+  transform: translateY(-2px);
+}
+
+.view-bill-btn:disabled {
+  background: #e5e5e5;
+  color: #999;
+  box-shadow: none;
+}
+
+/* ==========================
+   BILL MODAL
+========================== */
+
+.bill-modal {
+  position: fixed;
+  inset: 0;
+
+  background: rgba(0,0,0,0.55);
+
+  backdrop-filter: blur(6px);
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  z-index: 9999;
+}
+
+.bill-box {
+  width: 95%;
+  max-width: 420px;
+
+  background: white;
+
+  border-radius: 30px;
+
+  padding: 24px;
+
+  max-height: 85vh;
+
+  overflow-y: auto;
+
+  animation: popupShow .3s ease;
+
+  box-shadow:
+    0 25px 60px rgba(0,0,0,0.2);
+}
+
+.bill-title {
+  text-align: center;
+
+  font-size: 24px;
+
+  font-weight: 700;
+
+  margin-bottom: 18px;
+
+  color: #222;
+}
+
+.bill-box p {
+  margin: 8px 0;
+  color: #555;
+}
+
+.bill-box hr {
+  border: none;
+  border-top: 1px solid #f0f0f0;
+  margin: 16px 0;
+}
+
+.bill-box h3 {
+  color: #222;
+}
+
+.close-bill-btn {
+  width: 100%;
+
+  margin-top: 20px;
+
+  border: none;
+
+  border-radius: 18px;
+
+  padding: 14px;
+
+  background: linear-gradient(
+    135deg,
+    #ff7a00,
+    #ff9f43
+  );
+
+  color: white;
+
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+/* ==========================
+   EMPTY STATE
+========================== */
+
+.no-orders {
+  text-align: center;
+  color: #888;
+  padding: 50px 20px;
+}
+
+/* ==========================
+   ANIMATION
+========================== */
+
+@keyframes popupShow {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ==========================
+   MOBILE
+========================== */
+
+@media (max-width: 768px) {
+
+  .my-orders {
+    padding: 16px 14px 100px;
+  }
+
+  .my-orders h2 {
+    font-size: 24px;
+  }
+
+  .bill-box {
+    border-radius: 24px;
+  }
+}

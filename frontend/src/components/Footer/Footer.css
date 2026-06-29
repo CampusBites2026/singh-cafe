@@ -1,0 +1,97 @@
+.footer {
+  margin-top: 60px;
+
+  background: linear-gradient(
+    135deg,
+    #ff7a00,
+    #ff9f43
+  );
+
+  border-radius: 35px 35px 0 0;
+
+  padding: 40px 20px 25px;
+
+  color: white;
+
+  text-align: center;
+}
+
+.footer-top {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.footer-logo {
+  width: 90px;
+  margin-bottom: 16px;
+}
+
+.footer-top h2 {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.footer-top p {
+  max-width: 320px;
+
+  line-height: 1.7;
+
+  opacity: 0.95;
+
+  font-size: 14px;
+}
+
+.footer-contact {
+  margin-top: 28px;
+
+  display: flex;
+  justify-content: center;
+}
+
+.contact-card {
+  background: rgba(255,255,255,0.15);
+
+  backdrop-filter: blur(10px);
+
+  border-radius: 18px;
+
+  padding: 14px 18px;
+
+  font-size: 14px;
+
+  font-weight: 500;
+}
+
+.footer-bottom {
+  margin-top: 28px;
+
+  padding-top: 18px;
+
+  border-top: 1px solid rgba(255,255,255,0.25);
+
+  font-size: 13px;
+
+  opacity: 0.9;
+}
+
+@media (max-width: 768px) {
+
+  .footer {
+    padding: 35px 18px 25px;
+  }
+
+  .footer-top h2 {
+    font-size: 24px;
+  }
+
+  .footer-top p {
+    font-size: 13px;
+  }
+
+  .contact-card {
+    width: 100%;
+    max-width: 320px;
+  }
+}

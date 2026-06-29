@@ -1,0 +1,275 @@
+/* ================= HEADER ================= */
+
+.mobile-header {
+  background: linear-gradient(
+    135deg,
+    #ff6b00 0%,
+    #ff8f1f 40%,
+    #ffb347 100%
+  );
+  border-radius: 0 0 35px 35px;
+  padding: 24px 18px 28px;
+  color: white;
+  position: relative;
+  overflow: visible;
+}
+
+.mobile-header::before {
+  content: "";
+  position: absolute;
+  width: 250px;
+  height: 250px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.08);
+  top: -120px;
+  right: -80px;
+}
+
+.mobile-header::after {
+  content: "";
+  position: absolute;
+  width: 180px;
+  height: 180px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.05);
+  bottom: -90px;
+  left: -60px;
+}
+
+/* ================= HEADER TOP ================= */
+
+.header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 28px;
+  position: relative;
+  z-index: 10;
+}
+
+.location {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.location p {
+  margin: 0;
+  font-weight: 600;
+}
+
+.location small {
+  display: block;
+  opacity: 0.9;
+  font-size: 12px;
+}
+
+/* ================= NOTIFICATION ================= */
+
+.notification-wrapper {
+  position: relative;
+}
+
+.notification-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 16px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: rgba(255,255,255,0.18);
+  border: 1px solid rgba(255,255,255,0.25);
+
+  backdrop-filter: blur(15px);
+  cursor: pointer;
+  position: relative;
+}
+
+.notification-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+
+  min-width: 18px;
+  height: 18px;
+
+  background: #ff3b30;
+  color: white;
+
+  border-radius: 50%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 10px;
+  font-weight: 700;
+
+  border: 2px solid white;
+}
+
+/* ================= DROPDOWN ================= */
+
+.notification-dropdown {
+  position: fixed !important;
+
+  top: 75px !important;
+  left: 12px !important;
+  right: 12px !important;
+
+  width: auto !important;
+  max-width: none !important;
+
+  transform: none !important;
+
+  background: white;
+  color: #333;
+
+  border-radius: 18px;
+  border: 1px solid #ececec;
+
+  padding: 14px;
+
+  max-height: 65vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  z-index: 99999999;
+
+  box-shadow: 0 15px 45px rgba(0,0,0,0.18);
+
+  box-sizing: border-box;
+}
+
+/* Desktop */
+
+@media (min-width: 768px) {
+  .notification-dropdown {
+    left: auto !important;
+    right: 20px !important;
+    width: 380px !important;
+  }
+}
+
+.notification-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.notification-header h4 {
+  margin: 0;
+  color: #ff6b00;
+}
+
+.clear-all-btn {
+  border: none;
+  background: #fff3eb;
+  color: #ff6b00;
+
+  padding: 7px 12px;
+  border-radius: 8px;
+
+  font-size: 12px;
+  font-weight: 600;
+
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.notification-item {
+  display: flex;
+  gap: 12px;
+
+  width: 100%;
+  box-sizing: border-box;
+
+  background: #f8f8f8;
+  border-radius: 12px;
+
+  padding: 12px;
+  margin-bottom: 10px;
+
+  overflow: hidden;
+}
+
+.notification-item:last-child {
+  margin-bottom: 0;
+}
+
+.notification-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.notification-content p {
+  margin: 0;
+  color: #333;
+  font-size: 14px;
+  word-break: break-word;
+}
+
+.notification-content small {
+  display: block;
+  margin-top: 5px;
+  color: #888;
+  font-size: 11px;
+}
+
+.empty-notification {
+  text-align: center;
+  color: #888;
+  padding: 30px 10px;
+}
+
+/* ================= HERO ================= */
+
+.hero-content {
+  position: relative;
+  z-index: 1;
+}
+
+.welcome-text {
+  font-size: 14px;
+  opacity: 0.9;
+}
+
+.hero-content h1 {
+  margin-top: 12px;
+  font-size: 38px;
+  line-height: 1.1;
+  font-weight: 800;
+}
+
+.hero-content h1 span {
+  display: block;
+  color: #fff4e6;
+}
+
+.hero-content p {
+  margin-top: 12px;
+  font-size: 14px;
+  line-height: 1.7;
+  opacity: 0.9;
+  max-width: 320px;
+}
+
+/* ================= MOBILE ================= */
+
+@media (max-width: 768px) {
+  .hero-content h1 {
+    font-size: 30px;
+  }
+
+  .hero-content p {
+    font-size: 13px;
+  }
+
+  .mobile-header {
+    border-radius: 0 0 28px 28px;
+  }
+}

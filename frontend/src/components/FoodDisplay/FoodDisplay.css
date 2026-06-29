@@ -1,0 +1,112 @@
+.food-display {
+  padding: 8px 16px 40px;
+  animation: fadeIn 0.4s ease;
+}
+
+/* ================= HEADER ================= */
+
+.food-display-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.food-display-header h2 {
+  font-size: 28px;
+  font-weight: 800;
+  color: #222;
+  letter-spacing: -0.5px;
+}
+
+.food-display-header span {
+  font-size: 13px;
+  color: #8a8a8a;
+  font-weight: 500;
+}
+
+/* ================= FOOD GRID ================= */
+
+.food-display-list {
+  display: grid;
+
+  grid-template-columns: repeat(
+    auto-fill,
+    minmax(280px, 1fr)
+  );
+
+  gap: 24px;
+
+  align-items: stretch;
+}
+
+/* ================= EMPTY STATE ================= */
+
+.empty-food-state {
+  background: white;
+
+  border-radius: 28px;
+
+  padding: 50px 24px;
+
+  text-align: center;
+
+  box-shadow:
+    0 15px 35px rgba(0,0,0,0.06);
+
+  animation: fadeIn .3s ease;
+}
+
+.empty-food-state h3 {
+  color: #222;
+  margin-bottom: 10px;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.empty-food-state p {
+  color: #888;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* ================= MOBILE ================= */
+
+@media (max-width: 768px) {
+
+  .food-display {
+    padding: 0 16px 100px;
+  }
+
+  .food-display-header {
+    margin-bottom: 18px;
+  }
+
+  .food-display-header h2 {
+    font-size: 24px;
+  }
+
+  .food-display-list {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .empty-food-state {
+    padding: 40px 20px;
+    border-radius: 24px;
+  }
+}
+
+/* ================= ANIMATION ================= */
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

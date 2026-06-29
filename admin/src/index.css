@@ -1,0 +1,168 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap');
+
+*{
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  font-family: Outfit, sans-serif;
+}
+
+body{
+  min-height: 100vh;
+  background-color: #FCFCFC;
+}
+
+a{
+  text-decoration: none;
+  color: inherit;
+}
+
+hr{
+  border: none;
+  height: 1px;
+  background-color: #A9A9A9;
+}
+
+.app-content{
+  display: flex;
+}
+
+.flex-col{
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.cursor{
+  cursor: pointer;
+}
+
+/* ===========================================
+   ⭐ MODERN ADMIN LAYOUT UPGRADE
+   =========================================== */
+
+.admin-layout {
+  display: flex;
+  width: 100%;
+  height: auto;
+}
+
+.admin-content {
+  flex: 1;
+  padding: 24px 32px;
+  background: #f8f9fb;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Smooth Scroll */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #eaeaea;
+}
+::-webkit-scrollbar-thumb {
+  background: #c3c3c3;
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+/* ==========================================
+   CAMPUSBITES PREMIUM ADMIN NOTIFICATIONS
+========================================== */
+
+.Toastify__toast-container {
+  width: auto !important;
+  max-width: 420px;
+  z-index: 999999;
+}
+
+.cb-toast-wrapper {
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  min-height: auto !important;
+}
+
+.cb-toast {
+  position: relative;
+
+  background: rgba(20, 20, 20, 0.95);
+
+  backdrop-filter: blur(20px);
+
+  border-radius: 18px;
+
+  padding: 16px 18px;
+
+  color: white;
+
+  overflow: hidden;
+
+  border: 1px solid rgba(255,255,255,0.08);
+
+  box-shadow:
+    0 20px 50px rgba(0,0,0,0.30);
+
+  animation: cbSlideIn .25s ease;
+}
+
+.cb-toast::before {
+  content: "";
+
+  position: absolute;
+
+  left: 0;
+  top: 0;
+  bottom: 0;
+
+  width: 4px;
+
+  background: linear-gradient(
+    180deg,
+    #ff6b00,
+    #ff9f43
+  );
+}
+
+.cb-toast-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #ffb066;
+  letter-spacing: .5px;
+  margin-bottom: 4px;
+}
+
+.cb-toast-message {
+  font-size: 15px;
+  font-weight: 600;
+  color: white;
+}
+
+.cb-toast-subtitle {
+  margin-top: 4px;
+  font-size: 12px;
+  color: rgba(255,255,255,.7);
+}
+
+.Toastify__progress-bar {
+  background: #ff6b00 !important;
+}
+
+.Toastify__close-button {
+  color: white !important;
+}
+
+@keyframes cbSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-15px) scale(.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
