@@ -32,24 +32,26 @@ const App = () => {
     useState(false);
 
   useEffect(() => {
-  // TEMPORARY LOGIN BYPASS FOR RAZORPAY VERIFICATION
-  setIsAuthenticated(true);
-  setShowLogin(false);
-}, []);
+    const token = localStorage.getItem("token");
+
+    if (token) {
+      setIsAuthenticated(true);
+    } else {
+      setIsAuthenticated(false);
+      setShowLogin(true);
+    }
+  }, []);
 
   return (
     <>
      
 
-    {/* TEMPORARY LOGIN BYPASS FOR RAZORPAY VERIFICATION */}
-{/* 
-{!isAuthenticated && (
-  <LoginPopup
-    showLogin={true}
-    setShowLogin={setShowLogin}
-  />
-)}
-*/}
+      {!isAuthenticated && (
+        <LoginPopup
+          showLogin={true}
+          setShowLogin={setShowLogin}
+        />
+      )}
 
       {isAuthenticated && (
         <>
