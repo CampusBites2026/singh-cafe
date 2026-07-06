@@ -149,6 +149,9 @@ const formatBreakWindow = (timeStr) => {
 
 const PlaceOrder = () => {
   const [userType, setUserType] = useState(localStorage.getItem("userType") || "student");
+  const [orderType, setOrderType] = useState(
+  localStorage.getItem("orderType") || "takeaway"
+);
   const [data, setData] = useState({
     fullName: "",
     phone: "",
@@ -225,6 +228,7 @@ const {
     const saved = JSON.parse(localStorage.getItem("checkoutData"));
     if (saved) {
       setUserType(saved.userType || "student");
+setOrderType(saved.orderType || "takeaway");
       setData(prev => ({ ...prev, ...saved }));
     }
   }, []);
@@ -236,10 +240,18 @@ const {
       setPaymentStatus('processing');
     }
   }, [paymentStatus]);
+useEffect(() => {
+  localStorage.setItem(
+    "checkoutData",
+    JSON.stringify({
+      ...data,
+      userType,
+      orderType
+    })
+  );
 
-  useEffect(() => {
-    localStorage.setItem("checkoutData", JSON.stringify({ ...data, userType }));
-  }, [data, userType]);
+  localStorage.setItem("orderType", orderType);
+}, [data, userType, orderType]);
 
   /* ================= TABLE NUMBER ================= */
   useEffect(() => {
@@ -402,11 +414,15 @@ const removeCoupon = () => {
     if (!validateForm()) return;
 
     const address = {
-      ...data,
-      userType,
-      breakTimeWindow: formatBreakWindow(data.breakTime),
-      table: tableNumber
-    };
+  ...data,
+  userType,
+  orderType,
+  breakTimeWindow:
+    orderType === "takeaway"
+      ? formatBreakWindow(data.breakTime)
+      : "",
+  table: tableNumber
+};
 
     try {
       const resp = await placeOrder({
@@ -449,11 +465,15 @@ const handlePayOnline = async () => {
   if (!validateForm()) return;
 
   const address = {
-    ...data,
-    userType,
-    breakTimeWindow: formatBreakWindow(data.breakTime),
-    table: tableNumber
-  };
+  ...data,
+  userType,
+  orderType,
+  breakTimeWindow:
+    orderType === "takeaway"
+      ? formatBreakWindow(data.breakTime)
+      : "",
+  table: tableNumber
+};
 
   
 
@@ -626,7 +646,31 @@ await handlePayment(
             Faculty
           </div>
         </div>
-        
+        <div className="order-type-section">
+
+  <p className="order-type-title">
+    Order Type
+  </p>
+
+  <div className="user-type-boxes">
+
+    <div
+      className={`type-box ${orderType === "dinein" ? "active" : ""}`}
+      onClick={() => setOrderType("dinein")}
+    >
+      🍽️ Dine In
+    </div>
+
+    <div
+      className={`type-box ${orderType === "takeaway" ? "active" : ""}`}
+      onClick={() => setOrderType("takeaway")}
+    >
+      🛍️ Takeaway
+    </div>
+
+  </div>
+
+</div>
         {tableNumber && (
           <div style={{marginBottom: 12, padding: 8, background: "#f6f6f6", borderRadius: 6}}>
             <strong>Ordering for Table:</strong> {tableNumber}
