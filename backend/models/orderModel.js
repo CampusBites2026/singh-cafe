@@ -100,7 +100,11 @@ const orderSchema = new mongoose.Schema(
       type: String,
       default: "ONLINE",
     },
-
+orderType: {
+  type: String,
+  enum: ["dinein", "takeaway"],
+  default: "takeaway",
+},
     reservationStatus: {
       type: String,
       enum: ["ACTIVE", "RELEASED", "COMPLETED"],
