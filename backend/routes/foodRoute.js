@@ -6,6 +6,7 @@ import {
   listFood,
   removeFood,
   updateFood,
+  updateFoodImage,
   toggleFoodStatus,
   updateQuantity,
 } from "../controllers/foodController.js";
@@ -48,7 +49,12 @@ foodRouter.post(
   upload.single("image"),
   updateFood
 );
-
+// Update food image
+foodRouter.post(
+  "/update-image",
+  upload.single("image"),
+  updateFoodImage
+);
 // Remove food
 foodRouter.post(
   "/remove",
