@@ -4,7 +4,7 @@ import "./Navbar.css";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { StoreContext } from "../../Context/StoreContext";
 import { io } from "socket.io-client";
-import { ShoppingBag, LogOut } from "lucide-react";
+import { ShoppingBag, LogOut, ShoppingCart } from "lucide-react";
 
 import { showNotification } from "../../utils/showNotification";
 const Navbar = ({ setShowLogin }) => {
@@ -85,7 +85,7 @@ const Navbar = ({ setShowLogin }) => {
   };
 
   const handleAdminAccess = () => {
-    if (adminKey === "SRSINGHCAFE26") {
+    if (adminKey === "SRFOODCOURT26") {
       window.location.href = "https://singhcafeadmin.vercel.app/";
     } else {
       showNotification(
@@ -168,6 +168,15 @@ const Navbar = ({ setShowLogin }) => {
               Admin
             </button>
           )}
+          {!hideGreenBox && (
+  <button
+    className="desktop-cart-btn"
+    onClick={() => navigate("/cart")}
+  >
+    <ShoppingCart size={18} />
+    <span>Cart</span>
+  </button>
+)}
 
           {!token ? (
             <button className="signin-btn" onClick={() => setShowLogin(true)}>
