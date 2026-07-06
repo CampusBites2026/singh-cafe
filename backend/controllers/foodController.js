@@ -243,7 +243,54 @@ const updateQuantity = async (req, res) => {
     });
   }
 };
+/* ================= UPDATE FOOD IMAGE ================= */
+const updateFoodImage = async (req, res) => {
+  try {
+    const { id } = req.body;
 
+    const food = await foodModel.findById(id);
+
+    if (!food) {
+      return res.json({
+        success: false,
+        message: "Food not found",
+      });
+    }
+
+    if (!req.file) {
+      return res.json({
+        success: false,
+        message: "Please select an image",
+      });
+    }
+
+    // Delete old image
+    if (food.image) {
+      fs.unlink(`uploads/${food.image}`, (err) => {
+        if (err) console.log(err);
+      });
+    }
+
+    // Save new image
+    food.image = req.file.filename;
+
+    await food.save();
+
+    res.json({
+      success: true,
+      message: "Image updated successfully",
+      image: food.image,
+    });
+
+  } catch (error) {
+    console.error("UPDATE IMAGE ERROR:", error);
+
+    res.status(500).json({
+      success: false,
+      message: "Error updating image",
+    });
+  }
+};
 /* ================= TOGGLE FOOD STATUS ================= */
 const toggleFoodStatus = async (req, res) => {
   try {
@@ -281,6 +328,7 @@ export {
   listFood,
   removeFood,
   updateFood,
+  updateFoodImage,
   toggleFoodStatus,
-  updateQuantity, // ✅ NEW EXPORT
+  updateQuantity,
 };
