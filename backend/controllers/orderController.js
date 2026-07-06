@@ -64,7 +64,11 @@ const createOrderObject = async ({
           : "Unpacked",
     });
   }
-
+console.log("================================");
+console.log("ADDRESS RECEIVED:");
+console.log(address);
+console.log("ORDER TYPE:", address?.orderType);
+console.log("================================");
   return new orderModel({
     orderNumber,
     userId: userId || null,
@@ -78,6 +82,7 @@ const createOrderObject = async ({
     status: paymentMethod === "PENDING" ? "PENDING" : "PAID",
     payment: paymentMethod === "PAID",
     paymentMethod,
+    orderType: address?.orderType || "takeaway",
     deliveryFee: deliveryFee || 0,
   });
 };
@@ -91,6 +96,8 @@ const clearUserCart = async (userId) => {
 
 /* ================= PLACE ORDER (ONLINE) ================= */
 export const placeOrder = async (req, res) => {
+  console.log("===== PLACE ORDER HIT =====");
+console.log(req.body);
   try {
     const userId = req.user.id;
     const { items, amount, discount, couponCode, address, deliveryFee } =
