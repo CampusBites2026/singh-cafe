@@ -14,6 +14,7 @@ const Orders = () => {
   /* ================= ONLINE ORDERS ================= */
   const [onlineOrders, setOnlineOrders] = useState([]);
   const [searchOrderId, setSearchOrderId] = useState("");
+  const [searchCustomer, setSearchCustomer] = useState("");
   const [rejectingOrders, setRejectingOrders] = useState([]);
   const rejectTimers = useRef({});
 
@@ -275,24 +276,44 @@ const Orders = () => {
     const amount = order.totalAmount || order.amount;
     return `upi://pay?pa=${upiId}&pn=CampusBites&am=${amount}&cu=INR`;
   };  
-const filteredOnlineOrders = onlineOrders.filter((order) =>
-  order.orderNumber
-    ?.toLowerCase()
-    .includes(searchOrderId.toLowerCase())
-);
+const filteredOnlineOrders = onlineOrders.filter((order) => {
+  const matchesOrderId =
+    order.orderNumber
+      ?.toLowerCase()
+      .includes(searchOrderId.toLowerCase());
+
+  const matchesCustomer =
+    (order.address?.fullName || "")
+      .toLowerCase()
+      .includes(searchCustomer.toLowerCase());
+
+  return matchesOrderId && matchesCustomer;
+});
   /* ================= RENDER ================= */
   return (
     <div className="orders-page">
       <div className="orders-header">
   <h2 className="orders-title">Orders Dashboard</h2>
 
-  <input
-    type="text"
-    className="order-search"
-    placeholder="Search Order ID..."
-    value={searchOrderId}
-    onChange={(e) => setSearchOrderId(e.target.value)}
-  />
+  <div className="search-group">
+
+    <input
+      type="text"
+      className="order-search"
+      placeholder="Search Order ID..."
+      value={searchOrderId}
+      onChange={(e) => setSearchOrderId(e.target.value)}
+    />
+
+    <input
+      type="text"
+      className="order-search"
+      placeholder="Search Customer..."
+      value={searchCustomer}
+      onChange={(e) => setSearchCustomer(e.target.value)}
+    />
+
+  </div>
 </div>
 
       {/* ================= ONLINE ORDERS ================= */}
