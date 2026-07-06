@@ -187,7 +187,39 @@
     color: #ff7a18;
     border-color: #ff7a18;
 }
+/* ================= DESKTOP CART BUTTON ================= */
 
+.desktop-cart-btn{
+    display:flex;
+    align-items:center;
+    gap:8px;
+
+    padding:9px 16px;
+
+    border:none;
+    border-radius:12px;
+
+    background:#fff4eb;
+    color:#ff7a18;
+
+    font-size:14px;
+    font-weight:600;
+
+    cursor:pointer;
+    transition:all .25s ease;
+}
+
+.desktop-cart-btn svg{
+    width:18px;
+    height:18px;
+}
+
+.desktop-cart-btn:hover{
+    background:#ff7a18;
+    color:white;
+    transform:translateY(-2px);
+    box-shadow:0 8px 20px rgba(255,122,24,.25);
+}
 /* ================= SIGN IN BUTTON ================= */
 
 .signin-btn {
@@ -389,7 +421,9 @@
         display: none;
     }
 
-   
+   .desktop-cart-btn{
+    display:none;
+}
     .navbar-right {
         gap: 10px;
     }
@@ -405,9 +439,14 @@
     }
 }
 
-@media (min-width: 1025px) {
-    .mobile-fab {
-        display: none;
+@media (min-width:1025px){
+
+    .desktop-cart-btn{
+        display:flex;
+    }
+
+    .mobile-fab{
+        display:none;
     }
 }
 /* ================= FLOATING BUTTON ================= */
