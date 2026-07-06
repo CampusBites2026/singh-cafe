@@ -252,3 +252,52 @@
   color: #d32f2f;
   font-weight: 600;
 }
+/* ==========================================
+   CLICK TO CHANGE IMAGE
+========================================== */
+
+.image-change-label{
+    position:relative;
+    display:inline-block;
+    cursor:pointer;
+    overflow:hidden;
+    border-radius:10px;
+}
+
+.image-change-label img{
+    display:block;
+    width:60px;
+    height:60px;
+    object-fit:cover;
+    border-radius:10px;
+    transition:.3s;
+}
+
+.image-overlay{
+    position:absolute;
+    inset:0;
+    background:rgba(0,0,0,.55);
+    color:#fff;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    text-align:center;
+    font-size:10px;
+    font-weight:600;
+
+    opacity:0;
+    transition:.3s;
+    border-radius:10px;
+    padding:4px;
+}
+
+.image-change-label:hover img{
+    transform:scale(1.08);
+    filter:brightness(.75);
+}
+
+.image-change-label:hover .image-overlay{
+    opacity:1;
+}
