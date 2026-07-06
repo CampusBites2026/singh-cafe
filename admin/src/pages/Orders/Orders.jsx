@@ -271,7 +271,7 @@ const Orders = () => {
   };
 
   const generateUPILink = (order) => {
-    const upiId = "9569763863@kotak811";
+    const upiId = "Payment request from MADHUR AGARWAL https://razorpay.me/@madhuragarwal6639";
     const amount = order.totalAmount || order.amount;
     return `upi://pay?pa=${upiId}&pn=CampusBites&am=${amount}&cu=INR`;
   };  
@@ -302,9 +302,10 @@ const filteredOnlineOrders = onlineOrders.filter((order) =>
             <tr>
               <th>Order ID</th>
               <th>Items</th>
-              <th>Customer</th>
-              <th>Amount</th>
-              <th>Status</th>
+             <th>Customer</th>
+<th>Order Type</th>
+<th>Amount</th>
+<th>Status</th>
               <th className="col-action">Action</th>
             </tr>
           </thead>
@@ -313,24 +314,43 @@ const filteredOnlineOrders = onlineOrders.filter((order) =>
               <tr key={order._id}>
                 <td className="bold">{order.orderNumber}</td>
                 <td>{renderItems(order)}</td>
-                <td className="bold">
-                  {order.address?.fullName || "No Name"}
-                </td>
-                <td className="bold price">
-                  ₹{(order.amount + (order.deliveryFee || 0)).toFixed(2)}
-                </td>
-                <td>
-                  <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                    <span className={statusClass(order.status)}>
-                      {rejectingOrders.includes(order._id)
-                        ? "Rejecting (15s)"
-                        : order.status}
-                    </span>
-                    <span className="payment-pill">
-                      {order.paymentMethod === "COD" ? "💵 CASH" : "💳 PAID"}
-                    </span>
-                  </div>
-                </td>
+               <td className="bold">
+  {order.address?.fullName || "No Name"}
+</td>
+
+<td>
+  <span
+    className={`order-type-badge ${
+      order.orderType === "dinein"
+        ? "dinein"
+        : "takeaway"
+    }`}
+  >
+    {order.orderType === "dinein"
+      ? "🍽️ Dine In"
+      : "🛍️ Takeaway"}
+  </span>
+</td>
+
+<td className="bold price">
+  <div className="amount-box">
+    <span>
+      ₹{(order.amount + (order.deliveryFee || 0)).toFixed(2)}
+    </span>
+
+    <span className="payment-pill">
+      {order.paymentMethod === "COD" ? "💵 CASH" : "💳 PAID"}
+    </span>
+  </div>
+</td>
+
+<td>
+  <span className={statusClass(order.status)}>
+    {rejectingOrders.includes(order._id)
+      ? "Rejecting (15s)"
+      : order.status}
+  </span>
+</td>
                 <td>
                   <div className="action-buttons">
                     <button
@@ -354,12 +374,12 @@ const filteredOnlineOrders = onlineOrders.filter((order) =>
                         >
                           Reject
                         </button>
-                        <button
-                          className="btn-small btn-prepared"
-                          onClick={() => markPrepared(order._id)}
-                        >
-                          Already Cooked
-                        </button>
+                       <button
+  className="btn-small btn-prepared prepared-btn"
+  onClick={() => markPrepared(order._id)}
+>
+  Already Cooked
+</button>
                       </>
                     ) : (
                       <button
@@ -465,6 +485,12 @@ const filteredOnlineOrders = onlineOrders.filter((order) =>
                     <p><strong>Name:</strong> {selectedOrder.address?.fullName}</p>
                     <p><strong>Phone:</strong> {selectedOrder.address?.phone}</p>
                     <p><strong>User Type:</strong> {selectedOrder.address?.userType}</p>
+                    <p>
+  <strong>Order Type:</strong>{" "}
+  {selectedOrder.orderType === "dinein"
+    ? "🍽️ Dine In"
+    : "🛍️ Takeaway"}
+</p>
                   </div>
                   <div className="modal-section">
                     <h4>Delivery Details</h4>
