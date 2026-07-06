@@ -68,25 +68,50 @@
 }
 
 
-/* --- COMPACT COLUMN WIDTHS --- */
+/* ---------- ONLINE ORDERS TABLE ---------- */
 
+/* Order ID */
 .orders-table th:nth-child(1),
-.orders-table td:nth-child(1) { width: 12%; } /* Order ID */
+.orders-table td:nth-child(1){
+    width:10%;
+}
 
+/* Items */
 .orders-table th:nth-child(2),
-.orders-table td:nth-child(2) { width: 18%; } /* Items */
+.orders-table td:nth-child(2){
+    width:18%;
+}
 
+/* Customer */
 .orders-table th:nth-child(3),
-.orders-table td:nth-child(3) { width: 18%; } /* Customer */
+.orders-table td:nth-child(3){
+    width:15%;
+}
 
+/* Order Type */
 .orders-table th:nth-child(4),
-.orders-table td:nth-child(4) { width: 14%; } /* Amount */
+.orders-table td:nth-child(4){
+    width:12%;
+}
 
+/* Amount */
 .orders-table th:nth-child(5),
-.orders-table td:nth-child(5) { width: 14%; } /* Status */
+.orders-table td:nth-child(5){
+    width:10%;
+}
 
+/* Status */
 .orders-table th:nth-child(6),
-.orders-table td:nth-child(6) { width: 24%; } /* Action */
+.orders-table td:nth-child(6){
+    width:11%;
+}
+
+/* Action */
+.orders-table th:nth-child(7),
+.orders-table td:nth-child(7){
+    width:27%;
+    min-width:400px;
+}
 /* --- STATUS BADGES --- */
 
 .status-pill {
@@ -121,19 +146,22 @@
 
 /* --- ACTION BUTTONS --- */
 
-.action-buttons {
-  display: flex;
-  gap: 6px;
-  flex-wrap: nowrap;
+.action-buttons{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:5px;
+    flex-wrap:nowrap;
 }
 
-.btn-small {
-  padding: 6px 12px;
-  border-radius: 5px;
-  font-size: 13px;
-  border: none;
-  cursor: pointer;
-  transition: background 0.2s;
+.btn-small{
+    padding:6px 10px;
+    min-width:80px;
+    border:none;
+    border-radius:6px;
+    font-size:12px;
+    cursor:pointer;
+    white-space:nowrap;
 }
 
 .btn-accept {
@@ -364,12 +392,7 @@
 }
 
 
-/* REMOVE OLD DUPLICATE RULES */
-.action-buttons {
-  display: flex;
-  gap: 6px;
-  flex-wrap: nowrap;
-}
+
 
 
 /* =====================================================
@@ -409,31 +432,17 @@
   gap: 2px;
   font-size: 14px;
 }
-.payment-pill {
-  padding: 4px 10px;
-  border-radius: 20px;
-  font-size: 12px;
-  font-weight: 600;
-  background-color: #f3f4f6;
-  color: #111827;
-}
 
-.payment-pill:contains("CASH") {
-  background-color: #dcfce7;
-  color: #166534;
-}
 
-.payment-pill:contains("PAID") {
-  background-color: #dbeafe;
-  color: #1e40af;
-}
-.payment-pill {
-  padding: 3px 8px;
-  border-radius: 12px;
-  font-size: 11px;
-  font-weight: 600;
-  background-color: #dcfce7;
-  color: #166534;
+
+.payment-pill{
+    padding:3px 8px;
+    border-radius:12px;
+    font-size:11px;
+    font-weight:600;
+    background:#dcfce7;
+    color:#166534;
+    white-space:nowrap;
 }
 /* ================= SEARCH BAR ================= */
 
@@ -474,4 +483,38 @@
   .order-search {
     width: 100%;
   }
+}
+.order-type-badge{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    padding:6px 12px;
+    border-radius:20px;
+    font-size:13px;
+    font-weight:600;
+    min-width:110px;
+}
+
+.order-type-badge.dinein{
+    background:#FFF3CD;
+    color:#8A5A00;
+}
+
+.order-type-badge.takeaway{
+    background:#E8F5E9;
+    color:#2E7D32;
+}
+.orders-table td:last-child{
+    white-space:nowrap;
+}
+.prepared-btn{
+    min-width:130px;
+}
+
+.amount-box{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:2px;
 }
