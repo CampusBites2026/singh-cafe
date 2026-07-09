@@ -145,16 +145,13 @@ console.log(req.body);
 
       await order.save();
 
-      const io = req.app.get("io");
-      if (io) io.emit("new-order", order);
-
-      await userModel.findByIdAndUpdate(userId, {
-        $push: {
-          notifications: {
-            message: `✅ Order ${order.orderNumber} placed successfully`,
-          },
-        },
-      });
+      // FIX (Bug 1): Do NOT emit "new-order" or send a "placed successfully"
+      // notification here. This order is only a payment RESERVATION at this
+      // point (paymentStatus/status = "PENDING") — the payment has not been
+      // completed yet. Emitting here made unpaid/abandoned orders appear
+      // identical to real confirmed orders on the kitchen dashboard and in
+      // the user's notifications. The "new-order" emit + success notification
+      // now only fire in verifyOrder(), once payment is actually confirmed.
 
       return res.json({ success: true, order });
     } catch (err) {
@@ -303,7 +300,10 @@ export const acceptOrder = async (req, res) => {
 
     console.log("🔥 ORDER STATUS:", order.status);
 
-    const acceptableStatuses = ["CONFIRMED", "pending", "PENDING", "COD", "PAID"];
+    // FIX (Bug 2): Removed "pending" / "PENDING" from acceptable statuses.
+    // A PENDING order has not completed payment yet — kitchen staff should
+    // not be able to accept and start preparing an unpaid order.
+    const acceptableStatuses = ["CONFIRMED", "COD", "PAID"];
     if (!acceptableStatuses.includes(order.status)) {
       return res.status(400).json({
         success: false,
