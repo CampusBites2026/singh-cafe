@@ -251,8 +251,14 @@ export const placeOrderCod = async (req, res) => {
 /* ================= LIST ORDERS ================= */
 export const listOrders = async (req, res) => {
   try {
+    // FIX (Bug 3 continued): Also exclude "CANCELLED" orders — these are
+    // reservations that were abandoned (user closed Razorpay popup) or
+    // expired after 5 minutes without payment (see cancelReservation /
+    // releaseExpiredReservations, which set status = "CANCELLED"). They
+    // were never actually paid for, so they shouldn't appear in the admin
+    // orders dashboard at all.
     const orders = await orderModel
-      .find()
+      .find({ status: { $nin: ["PENDING", "CANCELLED"] } })
       .sort({ createdAt: -1 })
       .populate("userId", "name phone");
     res.json({ success: true, data: orders });
