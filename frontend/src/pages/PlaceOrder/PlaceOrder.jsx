@@ -655,8 +655,8 @@ await handlePayment(
   <div className="user-type-boxes">
 
     <div
-      className={`type-box ${orderType === "dinein" ? "active" : ""}`}
-      onClick={() => setOrderType("dinein")}
+  className={`type-box ${orderType === "dine-in" ? "active" : ""}`}
+onClick={() => setOrderType("dine-in")}
     >
       🍽️ Dine In
     </div>
