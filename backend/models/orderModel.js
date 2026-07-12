@@ -102,7 +102,7 @@ const orderSchema = new mongoose.Schema(
     },
 orderType: {
   type: String,
-  enum: ["dinein", "takeaway"],
+  enum: ["dine-in", "takeaway"],
   default: "takeaway",
 },
     reservationStatus: {
