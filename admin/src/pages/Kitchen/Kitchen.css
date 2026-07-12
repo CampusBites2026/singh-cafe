@@ -118,3 +118,28 @@
   line-height: 1.4;
   word-break: break-word;
 }
+
+/* ================= ORDER TYPE ================= */
+
+.kitchen-order-type {
+  margin: 10px 0 14px;
+}
+
+.badge-dinein,
+.badge-takeaway {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.badge-dinein {
+  background: #e8f5e9;
+  color: #1b5e20;
+}
+
+.badge-takeaway {
+  background: #fff3e0;
+  color: #ef6c00;
+}
