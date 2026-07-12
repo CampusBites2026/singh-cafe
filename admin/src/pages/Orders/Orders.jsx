@@ -342,12 +342,12 @@ const filteredOnlineOrders = onlineOrders.filter((order) => {
 <td>
   <span
     className={`order-type-badge ${
-      order.orderType === "dinein"
+      order.orderType === "dine-in"
         ? "dinein"
         : "takeaway"
     }`}
   >
-    {order.orderType === "dinein"
+    {order.orderType === "dine-in"
       ? "🍽️ Dine In"
       : "🛍️ Takeaway"}
   </span>
@@ -508,7 +508,7 @@ const filteredOnlineOrders = onlineOrders.filter((order) => {
                     <p><strong>User Type:</strong> {selectedOrder.address?.userType}</p>
                     <p>
   <strong>Order Type:</strong>{" "}
-  {selectedOrder.orderType === "dinein"
+  {selectedOrder.orderType === "dine-in"
     ? "🍽️ Dine In"
     : "🛍️ Takeaway"}
 </p>
