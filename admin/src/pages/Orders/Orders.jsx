@@ -272,7 +272,7 @@ const Orders = () => {
   };
 
   const generateUPILink = (order) => {
-    const upiId = "Payment request from MADHUR AGARWAL https://razorpay.me/@madhuragarwal6639";
+    const upiId = "agarwalmadhur532@okicici";
     const amount = order.totalAmount || order.amount;
     return `upi://pay?pa=${upiId}&pn=CampusBites&am=${amount}&cu=INR`;
   };  
