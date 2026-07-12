@@ -17,14 +17,15 @@ const createPosOrder = async (req, res) => {
   );
 
   try {
-    const {
-      items,
-      customerName,
-      customerPhone,
-      amount,
-      status,
-      paymentStatus,
-    } = req.body;
+   const {
+  items,
+  customerName,
+  customerPhone,
+  amount,
+  status,
+  paymentStatus,
+  orderType,
+} = req.body;
 
     if (!items || items.length === 0) {
       return res.status(400).json({
@@ -77,7 +78,7 @@ const createPosOrder = async (req, res) => {
       amount: Number(amount),
 
       source: "POS",
-
+orderType: orderType || "Dine-In",
       paymentMethod: "POS",
 
       paymentStatus:
