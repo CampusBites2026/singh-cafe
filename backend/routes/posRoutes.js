@@ -98,20 +98,20 @@ await validateStock(items);
 console.log("🔥 NEW POS ORDER NUMBER:", orderNumber);
 
     /* ---------- CREATE ORDER ---------- */
-    const newOrder = await PosOrder.create({
-      orderNumber,
-      items: orderItems,
-      totalAmount,
-      orderType: orderType || "dine-in",
-      customerName,
-      customerPhone,
-      paymentMethod:
-  String(paymentMethod || "cash")
-    .trim()
-    .toLowerCase(),
-      isPaid: false,
-      status: "CONFIRMED"
-    });
+const newOrder = await PosOrder.create({
+  orderNumber,
+  items: orderItems,
+  totalAmount,
+  orderType: orderType || "dine-in",
+  customerName,
+  customerPhone,
+  paymentMethod:
+    String(paymentMethod || "cash")
+      .trim()
+      .toLowerCase(),
+  isPaid: false,
+  status: "preparing"
+});
     console.log(">>> Calling updateStock");
 
 await updateStock(
