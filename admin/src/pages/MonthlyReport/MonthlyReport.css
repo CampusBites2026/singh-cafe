@@ -330,3 +330,184 @@
 .Unpacked-box p {
   color: #7f1d1d;
 }
+/* =========================================
+   NEW DASHBOARD STYLES
+========================================= */
+
+.mr-controls input[type="text"] {
+  min-width: 240px;
+}
+
+.mr-controls select,
+.mr-controls input,
+.mr-controls button {
+  height: 44px;
+}
+
+/* Revenue Cards */
+.revenue-card {
+  background: linear-gradient(135deg, #eff6ff, #dbeafe);
+  border: 1px solid #60a5fa;
+}
+
+.revenue-card h4 {
+  color: #1d4ed8;
+}
+
+.revenue-card p {
+  color: #1e3a8a;
+}
+
+/* Payment Cards */
+.payment-online {
+  background: #ecfdf5;
+  border: 1px solid #10b981;
+}
+
+.payment-cod {
+  background: #fff7ed;
+  border: 1px solid #f97316;
+}
+
+.payment-cash {
+  background: #fefce8;
+  border: 1px solid #eab308;
+}
+
+.payment-upi {
+  background: #f5f3ff;
+  border: 1px solid #8b5cf6;
+}
+
+/* Status Cards */
+.status-delivered {
+  border-left: 5px solid #22c55e;
+}
+
+.status-pending {
+  border-left: 5px solid #3b82f6;
+}
+
+.status-preparing {
+  border-left: 5px solid #f59e0b;
+}
+
+.status-prepared {
+  border-left: 5px solid #8b5cf6;
+}
+
+.status-rejected {
+  border-left: 5px solid #ef4444;
+}
+
+.status-cancelled {
+  border-left: 5px solid #6b7280;
+}
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, .45);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.fancy-modal {
+  width: 90%;
+  max-width: 850px;
+  background: #fff;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 25px 60px rgba(0,0,0,.2);
+}
+
+.modal-header {
+  padding: 18px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #2563eb;
+  color: #fff;
+}
+
+.modal-body {
+  padding: 24px;
+}
+
+.modal-close {
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px,1fr));
+  gap: 14px;
+}
+
+/* Better table */
+.mr-orders-table tbody tr {
+  transition: .25s;
+}
+
+.mr-orders-table tbody tr:hover {
+  background: #eef5ff;
+}
+
+/* Responsive */
+@media (max-width:768px){
+
+  .mr-page{
+    padding:16px;
+  }
+
+  .mr-controls{
+    flex-direction:column;
+  }
+
+  .mr-controls input,
+  .mr-controls select,
+  .mr-controls button{
+    width:100%;
+  }
+
+  .mr-orders-table{
+    overflow-x:auto;
+  }
+
+}
+.chart-card {
+  background: white;
+  border-radius: 16px;
+  padding: 20px;
+  margin: 25px 0;
+  box-shadow: 0 8px 25px rgba(0,0,0,.08);
+}
+
+.chart-card h3 {
+  margin-bottom: 20px;
+}
+.payment-chart-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(420px,1fr));
+    gap:25px;
+    margin:30px 0;
+}
+
+.chart-card{
+    background:#fff;
+    border-radius:16px;
+    padding:20px;
+    box-shadow:0 8px 25px rgba(0,0,0,.08);
+}
+
+.chart-card h3{
+    text-align:center;
+    margin-bottom:15px;
+}
