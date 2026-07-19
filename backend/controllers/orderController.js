@@ -35,6 +35,11 @@ const validateFacultyAccess = (address) => {
 };
 
 /* ================= CREATE ORDER OBJECT ================= */
+// FIX: paymentMethod must always be a real payment method value
+// ("ONLINE" | "COD" | "CASH" | "UPI") because that's what the schema's
+// enum allows. Whether the order is still awaiting payment confirmation
+// is now controlled separately via `isPending`, which drives
+// status/paymentStatus/payment instead of overloading paymentMethod.
 const createOrderObject = async ({
   userId,
   items,
@@ -43,7 +48,8 @@ const createOrderObject = async ({
   couponCode,
   address,
   deliveryFee,
-  paymentMethod = "PENDING",
+  paymentMethod,
+  isPending = false,
 }) => {
   const orderNumber = await generateOrderNumber();
 
@@ -64,11 +70,13 @@ const createOrderObject = async ({
           : "Unpacked",
     });
   }
-console.log("================================");
-console.log("ADDRESS RECEIVED:");
-console.log(address);
-console.log("ORDER TYPE:", address?.orderType);
-console.log("================================");
+
+  console.log("================================");
+  console.log("ADDRESS RECEIVED:");
+  console.log(address);
+  console.log("ORDER TYPE:", address?.orderType);
+  console.log("================================");
+
   return new orderModel({
     orderNumber,
     userId: userId || null,
@@ -78,9 +86,9 @@ console.log("================================");
     couponCode: couponCode || null,
     address,
     specialInstructions: address?.specialInstructions || "",
-    paymentStatus: paymentMethod === "PENDING" ? "PENDING" : "PAID",
-    status: paymentMethod === "PENDING" ? "PENDING" : "PAID",
-    payment: paymentMethod === "PAID",
+    paymentStatus: isPending ? "PENDING" : "PAID",
+    status: isPending ? "PENDING" : "PAID",
+    payment: !isPending,
     paymentMethod,
     orderType: address?.orderType || "takeaway",
     deliveryFee: deliveryFee || 0,
@@ -97,7 +105,7 @@ const clearUserCart = async (userId) => {
 /* ================= PLACE ORDER (ONLINE) ================= */
 export const placeOrder = async (req, res) => {
   console.log("===== PLACE ORDER HIT =====");
-console.log(req.body);
+  console.log(req.body);
   try {
     const userId = req.user.id;
     const { items, amount, discount, couponCode, address, deliveryFee } =
@@ -137,7 +145,8 @@ console.log(req.body);
         couponCode,
         address: updatedAddress,
         deliveryFee,
-        paymentMethod: "PENDING",
+        paymentMethod: "ONLINE",
+        isPending: true,
       });
 
       order.reservationExpiresAt = new Date(Date.now() + 5 * 60 * 1000);
@@ -212,6 +221,7 @@ export const placeOrderCod = async (req, res) => {
       address: updatedAddress,
       deliveryFee,
       paymentMethod: "COD",
+      isPending: false,
     });
 
     await updateStock(order.items);
