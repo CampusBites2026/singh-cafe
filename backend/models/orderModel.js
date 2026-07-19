@@ -13,6 +13,16 @@ const orderSchema = new mongoose.Schema(
       default: null,
     },
 
+    customerName: {
+      type: String,
+      default: "",
+    },
+
+    customerPhone: {
+      type: String,
+      default: "",
+    },
+
     items: [
       {
         _id: String,
@@ -40,6 +50,12 @@ const orderSchema = new mongoose.Schema(
     amount: {
       type: Number,
       required: true,
+      min: 0,
+    },
+
+    receivedAmount: {
+      type: Number,
+      default: 0,
       min: 0,
     },
 
@@ -99,12 +115,21 @@ const orderSchema = new mongoose.Schema(
     paymentMethod: {
       type: String,
       default: "ONLINE",
+      enum: ["ONLINE", "COD", "CASH", "UPI"],
     },
-orderType: {
-  type: String,
-  enum: ["dine-in", "takeaway"],
-  default: "takeaway",
-},
+
+    paymentSource: {
+      type: String,
+      default: "WEBSITE",
+      enum: ["WEBSITE", "POS", "QR"],
+    },
+
+    orderType: {
+      type: String,
+      enum: ["dine-in", "takeaway"],
+      default: "takeaway",
+    },
+
     reservationStatus: {
       type: String,
       enum: ["ACTIVE", "RELEASED", "COMPLETED"],
@@ -116,8 +141,15 @@ orderType: {
     },
 
     razorpayOrderId: String,
+
     razorpayPaymentId: String,
+
     razorpaySignature: String,
+
+    transactionId: {
+      type: String,
+      default: "",
+    },
   },
   {
     timestamps: true,
