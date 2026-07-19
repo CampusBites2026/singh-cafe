@@ -85,7 +85,7 @@ const Navbar = ({ setShowLogin }) => {
   };
 
   const handleAdminAccess = () => {
-    if (adminKey === "SRFOODCOURT26") {
+    if (adminKey === "SRSINGHCAFE26") {
       window.location.href = "https://singhcafeadmin.vercel.app/";
     } else {
       showNotification(
