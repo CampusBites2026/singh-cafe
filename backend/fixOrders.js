@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import orderModel from "./models/orderModel.js";
 import userModel from "./models/userModel.js";
 
-const MONGO_URL = "mongodb+srv://food_court:FOODCOURT2026@cluster0.mo2fed1.mongodb.net/food_court_db";
+const MONGO_URL = "mongodb+srv://singh_cafe:SINGHCAFE2026@cluster0.grpddg2.mongodb.net/singh_cafe_db";
 
 const fixOrders = async () => {
   try {

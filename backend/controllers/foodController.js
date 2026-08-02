@@ -81,7 +81,7 @@ availableQuantity:
       (item.reservedQuantity || 0),
 
   image: item.image
-    ? `https://food-court-seln.onrender.com/images/${item.image}`
+    ? `https://singh-cafe-4pum.onrender.com/images/${item.image}`
     : null,
 }));
 

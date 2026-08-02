@@ -40,7 +40,7 @@ const Navbar = () => {
         clearInterval(interval);
 
         window.google.accounts.id.initialize({
-          client_id: "850316169928-5a6nn5cq63ikm5vrdr9q5gm9mqplhohg.apps.googleusercontent.com",
+          client_id: "850316169928-4mc3q9944ucpvsjuo19o4nl8f4alvn78.apps.googleusercontent.com",
           callback: handleCredentialResponse,
         });
 

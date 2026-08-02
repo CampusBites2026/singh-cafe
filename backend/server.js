@@ -65,9 +65,9 @@ const allowedOrigins = [
   "http://localhost:5174",
   "http://127.0.0.1:5500",
  
-  "https://campusbitefoodcourt.vercel.app",         // ← your actual frontend URL
-  "https://campusbitefoodcourtadmin-opal.vercel.app",// ← update your admin URL too if needed
-  "https://food-court-seln.onrender.com",
+  "https://singhcafe.vercel.app",         // ← your actual frontend URL
+  "https://singhcafeadmin.vercel.app",// ← update your admin URL too if needed
+  "https://singh-cafe-4pum.onrender.com",
 ];
 
 // =====================================

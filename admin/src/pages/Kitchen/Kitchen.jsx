@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "./Kitchen.css";
 
-const API_BASE = "https://food-court-seln.onrender.com";
+const API_BASE = "https://singh-cafe-4pum.onrender.com";
 
 const Kitchen = () => {
   const [orders, setOrders] = useState([]);

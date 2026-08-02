@@ -9,10 +9,10 @@ import StatusChart from "./components/StatusChart";
 import OrderSourceChart from "./components/OrderSourceChart";
 
 const API_MONTHLY =
-  "https://food-court-seln.onrender.com/api/reports/monthly";
+  "https://singh-cafe-4pum.onrender.com/api/reports/monthly";
 
 const API_DAILY =
-  "https://food-court-seln.onrender.com/api/reports/daily";
+  "https://singh-cafe-4pum.onrender.com/api/reports/daily";
 
 const MonthlyReport = () => {
   const [mode, setMode] = useState("monthly");

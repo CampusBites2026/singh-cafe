@@ -27,7 +27,7 @@ const Navbar = ({ setShowLogin }) => {
     const fetchKitchenStatus = async () => {
       try {
         const res = await fetch(
-  "https://food-court-seln.onrender.com/api/settings"
+  "https://singh-cafe-4pum.onrender.com/api/settings"
 );
         const data = await res.json();
         setKitchenOpen(data.kitchenOpen);
@@ -40,7 +40,7 @@ const Navbar = ({ setShowLogin }) => {
 
   // Socket Connection
   useEffect(() => {
-    const socket = io("https://food-court-seln.onrender.com");
+    const socket = io("https://singh-cafe-4pum.onrender.com");
 
     socket.on("kitchenStatusUpdated", (status) => {
       setKitchenOpen(status);
@@ -85,8 +85,8 @@ const Navbar = ({ setShowLogin }) => {
   };
 
   const handleAdminAccess = () => {
-    if (adminKey === "SRFOODCOURT26") {
-      window.location.href = "https://campusbitefoodcourtadmin-opal.vercel.app/";
+    if (adminKey === "SRSINGHCAFE26") {
+      window.location.href = "https://singhcafeadmin.vercel.app/";
     } else {
       showNotification(
   "Access Denied",

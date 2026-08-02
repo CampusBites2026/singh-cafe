@@ -15,7 +15,7 @@ const AdminPOS = () => {
   const [loading, setLoading] = useState(false);
   const [menuLoading, setMenuLoading] = useState(false);
 
-  const API_BASE = "https://food-court-seln.onrender.com";
+  const API_BASE = "https://singh-cafe-4pum.onrender.com";
   const FOOD_API = `${API_BASE}/api/food/list`;
   const POS_ORDER_API = `${API_BASE}/api/pos/order`;
 

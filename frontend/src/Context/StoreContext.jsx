@@ -10,7 +10,7 @@ export const StoreContext = createContext(null);
 // AXIOS CONFIG — runs at module load, before any component mounts.
 // Guarantees interceptor is attached before loadData fires.
 // ============================
-const APP_URL = import.meta.env.VITE_API_URL || "https://food-court-seln.onrender.com";
+const APP_URL = import.meta.env.VITE_API_URL || "https://singh-cafe-4pum.onrender.com";
 axios.defaults.baseURL = APP_URL;
 
 // Attach token to every outgoing request
